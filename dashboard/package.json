@@ -1,0 +1,14 @@
+{
+  "name": "vismoocplus-dashboard",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "config": "^1.29.2",
+    "express": "^4.16.2",
+    "parse-dashboard": "^1.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.11"
+  }
+}

@@ -1,0 +1,40 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./volumes/mongo:/data/db
+    logging:
+      driver: none
+  web:
+    image: node:8
+    ports:
+      - "1337:1337"
+    depends_on:
+      - mongo
+    volumes:
+      - ./web:/app
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+    command: npm run dev
+  front:
+    image: node:8
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./front:/app
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+    command: sleep infinity
+  dashboard:
+    image: node:8
+    ports:
+      - "4040:4040"
+    volumes:
+      - ./dashboard:/app
+    working_dir: /app
+    command: npm run dev
