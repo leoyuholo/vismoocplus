@@ -25,7 +25,26 @@ export default new VueRouter({
   scrollBehavior: () => ({ y: 0 }),
 
   routes: [
-    { path: '/', component: load('Hello') },
+    { path: '/', component: load('containers/Login') },
+    {
+      path: '/course/:courseId',
+      component: load('containers/Course'),
+      children: [{
+        path: 'lecture/:lectureId',
+        component: load('pages/Lecture')
+      }]
+    },
+    {
+      path: '/studio/:courseId',
+      component: load('containers/Studio'),
+      children: [{
+        path: 'lecture/:lectureId/edit',
+        component: load('pages/EditLecture')
+      }, {
+        path: 'new',
+        component: load('pages/CreateLecture')
+      }]
+    },
 
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found

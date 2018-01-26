@@ -11,11 +11,18 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 // require(`quasar/dist/quasar.ie.${__THEME}.css`)
 
 import Vue from 'vue'
-import Quasar from 'quasar'
+// import Quasar from 'quasar'
+import Quasar, * as All from 'quasar'
+
 import router from './router'
+import store from './store'
 
 Vue.config.productionTip = false
-Vue.use(Quasar) // Install Quasar Framework
+// Vue.use(Quasar) // Install Quasar Framework
+Vue.use(Quasar, {
+  components: All,
+  directives: All
+})
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')
@@ -25,11 +32,29 @@ import 'quasar-extras/material-icons'
 // import 'quasar-extras/fontawesome'
 // import 'quasar-extras/animate'
 
+// router store sync
+import { sync } from 'vuex-router-sync'
+sync(store, router)
+
+// video.js
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
+import 'assets/styles/videojs-yt.css'
+Vue.use(VueVideoPlayer)
+
+// form validation
+import Vuelidate from 'vuelidate'
+Vue.use(Vuelidate)
+
 Quasar.start(() => {
   /* eslint-disable no-new */
   new Vue({
     el: '#q-app',
+    store,
     router,
-    render: h => h(require('./App').default)
+    render: h => h(require('./App').default),
+    created () {
+      this.$store.dispatch('init')
+    }
   })
 })
