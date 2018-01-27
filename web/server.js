@@ -8,7 +8,8 @@ const api = new ParseServer({
   databaseURI: config.get('databaseURI'),
   appId: config.get('appId'),
   masterKey: config.get('masterKey'),
-  serverURL: config.get('serverURL')
+  serverURL: config.get('serverURL'),
+  maxUploadSize: config.get('maxUploadSize')
 })
 
 app.use('/parse', api)

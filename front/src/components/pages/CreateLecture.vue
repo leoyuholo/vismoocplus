@@ -51,7 +51,7 @@ export default {
       this.$store.dispatch('createLecture', lecture)
         .then(lecture =>
           alert('positive', `Lecture ${lecture.name} created. Redirecting...`)
-            .then(() => this.$router.push({ path: `studio/${this.courseId}/lecture/${lecture.id}/edit` }))
+            .then(() => this.$router.push({ path: `/studio/${this.courseId}/lecture/${lecture.objectId}/edit` }))
         )
     },
     processFile (event, type) {

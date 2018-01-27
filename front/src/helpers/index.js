@@ -4,7 +4,7 @@ import 'quasar-extras/animate/bounceInRight.css'
 import 'quasar-extras/animate/bounceOutRight.css'
 
 function alert (type, msg) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const alert = Alert.create({
       enter: 'bounceInRight',
       leave: 'bounceOutRight',

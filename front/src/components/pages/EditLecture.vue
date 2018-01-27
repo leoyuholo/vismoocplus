@@ -53,13 +53,12 @@ export default {
         changes.posterFile = this.posterFile
       }
       this.$store.dispatch('updateLecture', { id: this.lectureId, changes })
+        .then(() => alert('positive', `Lecture ${this.lecture.name} updated.`))
     },
     remove () {
       this.$store.dispatch('deleteLecture', this.lectureId)
-        .then(() =>
-          alert('positive', `Lecture ${this.lecture.name} deleted. Redirecting...`)
-            .then(() => this.$router.push({ path: `studio/${this.courseId}/lecture/new` }))
-        )
+        .then(() => alert('positive', `Lecture ${this.lecture.name} deleted. Redirecting...`))
+        .then(() => this.$router.push({ path: `studio/${this.courseId}/lecture/new` }))
     },
     processFile (event, type) {
       const file = event.target.files ? event.target.files[0] : undefined
