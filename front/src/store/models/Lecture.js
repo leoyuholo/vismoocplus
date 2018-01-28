@@ -11,15 +11,20 @@ class Lecture extends Parse.Object {
     const poster = new Parse.File(`${courseId}_${name}_poster`, posterFile)
     return Promise.all([video.save(), poster.save()])
       .then(() => {
-        const lecture = {
+        const acl = new Parse.ACL()
+        acl.setPublicReadAccess(true)
+        acl.setWriteAccess(Parse.User.current().id, true)
+
+        const lecture = new Lecture()
+        lecture.setACL(acl)
+
+        return lecture.save({
           courseId,
           name,
           description,
           video,
           poster
-        }
-        return (new Lecture()).save(lecture)
-          .then(lecture => lecture.toJSON())
+        }).then(lecture => lecture.toJSON())
       })
       .catch(errorHandler)
   }

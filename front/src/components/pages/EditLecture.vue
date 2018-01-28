@@ -56,9 +56,9 @@ export default {
         .then(() => alert('positive', `Lecture ${this.lecture.name} updated.`))
     },
     remove () {
-      this.$store.dispatch('deleteLecture', this.lectureId)
+      this.$store.dispatch('deleteLecture', { id: this.lectureId })
         .then(() => alert('positive', `Lecture ${this.lecture.name} deleted. Redirecting...`))
-        .then(() => this.$router.push({ path: `studio/${this.courseId}/lecture/new` }))
+        .then(() => this.$router.push({ path: `/studio/${this.courseId}/new` }))
     },
     processFile (event, type) {
       const file = event.target.files ? event.target.files[0] : undefined
