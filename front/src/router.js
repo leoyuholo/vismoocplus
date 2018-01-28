@@ -8,7 +8,7 @@ function load (component) {
   return () => import(`@/${component}.vue`)
 }
 
-export default new VueRouter({
+const router = new VueRouter({
   /*
    * NOTE! VueRouter "history" mode DOESN'T works for Cordova builds,
    * it is only to be used only for websites.
@@ -25,7 +25,21 @@ export default new VueRouter({
   scrollBehavior: () => ({ y: 0 }),
 
   routes: [
-    { path: '/', component: load('containers/Login') },
+    { path: '/', redirect: '/user/login' },
+    {
+      path: '/user',
+      component: load('containers/User'),
+      children: [{
+        path: 'login',
+        component: load('pages/Login')
+      }, {
+        path: 'forgot',
+        component: load('pages/Forgot')
+      }, {
+        path: 'signup',
+        component: load('pages/Signup')
+      }]
+    },
     {
       path: '/course/:courseId',
       component: load('containers/Course'),
@@ -36,11 +50,16 @@ export default new VueRouter({
     },
     {
       path: '/studio/:courseId',
+      meta: { title: 'Studio' },
       component: load('containers/Studio'),
       children: [{
+        path: '', redirect: 'new'
+      },
+      {
         path: 'lecture/:lectureId/edit',
         component: load('pages/EditLecture')
-      }, {
+      },
+      {
         path: 'new',
         component: load('pages/CreateLecture')
       }]
@@ -50,3 +69,11 @@ export default new VueRouter({
     { path: '*', component: load('Error404') } // Not found
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  document.title = to.matched[0].meta.title || 'VisMOOC+'
+  document.title += to.params.courseId ? ' ' + to.params.courseId.toUpperCase() : ''
+  next()
+})
+
+export default router

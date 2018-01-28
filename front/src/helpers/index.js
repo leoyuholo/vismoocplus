@@ -34,7 +34,22 @@ function errorHandler (error) {
   console.warn(error)
 }
 
+function isValidHKUSTEmail (email) {
+  return (/@connect.ust.hk$/.test(email) || /@ust.hk$/.test(email) || /@cse.ust.hk$/.test(email))
+}
+
+function defaultEmailDomain (email) {
+  if (email && email.indexOf('@') === -1) {
+    return `${email}@connect.ust.hk`
+  }
+  else {
+    return email
+  }
+}
+
 export {
   alert,
-  errorHandler
+  errorHandler,
+  isValidHKUSTEmail,
+  defaultEmailDomain
 }

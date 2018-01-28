@@ -1,7 +1,8 @@
 
 export default {
-  init (state) {
+  init (state, user) {
     state.started = true
+    state.user = user
   },
   setLectures (state, lectures) {
     state.lectures = lectures
@@ -14,5 +15,8 @@ export default {
   },
   removeLecture (state, id) {
     state.lectures = state.lectures.filter(l => l.id !== id)
+  },
+  setUser (state, user) {
+    state.user = user
   }
 }

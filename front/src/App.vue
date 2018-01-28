@@ -12,4 +12,8 @@
 export default {}
 </script>
 
-<style></style>
+<style lang="stylus">
+@import '~variables'
+body
+  background-color $tertiary
+</style>

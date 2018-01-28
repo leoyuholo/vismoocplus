@@ -9,7 +9,12 @@ const api = new ParseServer({
   appId: config.get('appId'),
   masterKey: config.get('masterKey'),
   serverURL: config.get('serverURL'),
-  maxUploadSize: config.get('maxUploadSize')
+  publicServerURL: config.get('publicServerURL'),
+  maxUploadSize: config.get('maxUploadSize'),
+  appName: config.get('appName'),
+  emailAdapter: config.get('emailAdapter'),
+  verifyUserEmails: config.get('verifyUserEmails'),
+  preventLoginWithUnverifiedEmail: config.get('preventLoginWithUnverifiedEmail')
 })
 
 app.use('/parse', api)

@@ -19,6 +19,7 @@ services:
     working_dir: /app
     environment:
       NODE_ENV: development
+      VERBOSE: 1
     command: npm run dev
   front:
     image: node:8

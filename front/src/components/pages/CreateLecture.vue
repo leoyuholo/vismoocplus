@@ -2,7 +2,7 @@
   <div class="layout-padding">
     <p class="caption">Create Lecture</p>
     <q-field>
-      <q-input v-model="lecture.name" float-label="Lecture Name" :error="$v.lecture.name.$error"  @blur="$v.lecture.name.$touch" />
+      <q-input v-model="lecture.name" float-label="Lecture Name" :error="$v.lecture.name.$error" @blur="$v.lecture.name.$touch" />
     </q-field>
     <q-field>
       <q-input v-model="lecture.description" float-label="Lecture Description" :error="$v.lecture.description.$error"  @blur="$v.lecture.description.$touch" />

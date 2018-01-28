@@ -1,5 +1,5 @@
 <template>
-  <q-layout ref="layout" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
+  <q-layout ref="layout" class="bg-white" view="lHh Lpr fff" :left-class="{'bg-grey-2': true}">
     <q-toolbar slot="header">
 
       <q-btn flat @click="$refs.layout.toggleLeft()">
@@ -10,6 +10,10 @@
         VisMOOC+
         <div slot="subtitle">HKUST VisLab</div>
       </q-toolbar-title>
+
+      <q-btn flat @click="logout">
+        Log out
+      </q-btn>
 
     </q-toolbar>
 
@@ -30,7 +34,7 @@ export default {
     LectureList
   },
   computed: {
-    ...mapGetters(['courseId']),
+    ...mapGetters(['courseId', 'lectureId']),
     lectures () {
       return this.$store.getters.lectures.map(l => ({
         ...l,
@@ -38,8 +42,19 @@ export default {
       }))
     }
   },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+        .then(() => this.$router.push({ path: '/' }))
+    }
+  },
   mounted () {
-    this.$store.dispatch('getLectures')
+    this.$store.dispatch('getLectures', { courseId: this.$route.params.courseId })
+      .then(lectures => {
+        if (this.lectureId === 'index' && lectures.length > 0) {
+          this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
+        }
+      })
   }
 }
 </script>
