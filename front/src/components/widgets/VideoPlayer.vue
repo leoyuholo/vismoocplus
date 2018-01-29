@@ -10,7 +10,6 @@
                    @waiting="onPlayerWaiting($event)"
                    @playing="onPlayerPlaying($event)"
                    @timeupdate="onPlayerTimeupdate($event)"
-                   @ratechange="onPlayerRateChange($event)"
 
                    @ready="playerReadied">
     </vue-video-player>
@@ -67,7 +66,8 @@ export default {
         currentTime: this.currentTime,
         playbackRate: this.playbackRate,
         volume: this.volume,
-        fullscreen: this.fullscreen
+        fullscreen: this.fullscreen,
+        waitSince: this.waitSince
       }
 
       if (props) {
@@ -147,7 +147,7 @@ export default {
       this.playbackRate = newRate
     }
   },
-  wacth: {
+  watch: {
     options (newOptions, oldOptions) {
       if (newOptions.src !== oldOptions.src) {
         this.emit('quit')
