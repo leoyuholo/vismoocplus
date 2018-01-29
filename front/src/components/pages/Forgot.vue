@@ -29,7 +29,7 @@ export default {
   },
   data () {
     return {
-      email: 'leoyuholo@cse.ust.hk',
+      email: '',
       errorMsg: '',
       successMsg: ''
     }

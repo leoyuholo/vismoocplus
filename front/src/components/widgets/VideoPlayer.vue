@@ -1,22 +1,17 @@
 <template>
   <div>
-    <vue-video-player  class="video-player-box"
+    <vue-video-player class="video-player-box"
                    ref="videoPlayer"
                    :options="playerOptions"
                    :playsinline="true"
-                   customEventName="customstatechangedeventname"
 
-                   @play="onPlayerPlay($event)"
                    @pause="onPlayerPause($event)"
                    @ended="onPlayerEnded($event)"
                    @waiting="onPlayerWaiting($event)"
                    @playing="onPlayerPlaying($event)"
-                   @loadeddata="onPlayerLoadeddata($event)"
                    @timeupdate="onPlayerTimeupdate($event)"
-                   @canplay="onPlayerCanplay($event)"
-                   @canplaythrough="onPlayerCanplaythrough($event)"
+                   @ratechange="onPlayerRateChange($event)"
 
-                   @statechanged="playerStateChanged($event)"
                    @ready="playerReadied">
     </vue-video-player>
   </div>
@@ -32,11 +27,14 @@ export default {
     vueVideoPlayer: videoPlayer
   },
   data () {
-    return {}
+    return {
+      currentTime: 0,
+      volume: 1,
+      playbackRate: 1
+    }
   },
   computed: {
     playerOptions () {
-      // console.log('options', this.options)
       return {
         // videojs options
         language: 'en',
@@ -50,45 +48,114 @@ export default {
     }
   },
   methods: {
-    onPlayerPlay (player) {
-      // console.log('player play!', player)
-    },
-    onPlayerPause (player) {
-      // console.log('player pause!', player)
-    },
-    onPlayerEnded (player) {
-      // console.log('player end!', player)
-    },
-    onPlayerWaiting (player) {
-      // console.log('player Waiting!', player)
-    },
-    onPlayerPlaying (player) {
-      // console.log('player Playing!', player)
-    },
-    onPlayerLoadeddata (player) {
-      // console.log('player Loadeddata!', player)
-    },
-    onPlayerTimeupdate (player) {
-      // console.log('player Timeupdate!', player)
-    },
-    onPlayerCanplay (player) {
-      // console.log('player Canplay!', player)
-    },
-    onPlayerCanplaythrough (player) {
-      // console.log('player Canplaythrough!', player)
-    },
-    playerStateChanged (playerCurrentState) {
-      // console.log('player current update state', playerCurrentState)
+    emit (type, props) {
+      // events: [
+      //   'ready',
+      //   'waited',
+      //   'play',
+      //   'pause',
+      //   'end',
+      //   'seek',
+      //   'enterfullscreen',
+      //   'exitfullscreen',
+      //   'volumechange',
+      //   'ratechange',
+      //   'quit'
+      // ]
+      const event = {
+        type,
+        currentTime: this.currentTime,
+        playbackRate: this.playbackRate,
+        volume: this.volume,
+        fullscreen: this.fullscreen
+      }
+
+      if (props) {
+        Object.entries(props).forEach(([k, v]) => {
+          event[k] = v
+        })
+      }
+
+      return this.$emit(type, event)
     },
     playerReadied (player) {
-      // console.log('the player is readied', player)
+      player.on('seeking', this.onSeeking)
+      player.on('volumechange', this.onVolumeChange)
+      player.on('ratechange', this.onRateChange)
+      player.on('fullscreenchange', this.onFullscreenChange)
+
+      this.currentTime = player.currentTime()
+      this.volume = player.volume()
+      this.playbackRate = player.playbackRate()
+      this.fullscreen = player.isFullscreen()
+
+      this.emit('ready')
+    },
+    onPlayerWaiting (player) {
+      this.waitSince = Date.now()
+    },
+    onPlayerTimeupdate (player) {
+      this.currentTime = player.currentTime()
+
+      if (this.waitSince) {
+        this.emit('waited', {
+          waitSince: this.waitSince,
+          waitEnd: Date.now()
+        })
+        this.waitSince = undefined
+      }
+    },
+    onPlayerPlaying (player) {
+      this.emit('play')
+    },
+    onPlayerPause (player) {
+      this.emit('pause')
+    },
+    onPlayerEnded (player) {
+      this.emit('end')
+    },
+    onSeeking (event) {
+      this.emit('seek', {
+        oldTime: this.currentTime,
+        newTime: event.target.player.currentTime()
+      })
+    },
+    onFullscreenChange (event) {
+      if (event.target.player.isFullscreen()) {
+        this.fullscreen = true
+        this.emit('enterfullscreen')
+      }
+      else {
+        this.fullscreen = false
+        this.emit('exitfullscreen')
+      }
+    },
+    onVolumeChange (player) {
+      const newVolume = event.target.player.volume()
+      this.emit('volumechange', {
+        oldVolume: this.volume,
+        newVolume
+      })
+      this.volume = newVolume
+    },
+    onRateChange (event) {
+      const newRate = event.target.player.playbackRate()
+      this.emit('ratechange', {
+        oldRate: this.playbackRate,
+        newRate
+      })
+      this.playbackRate = newRate
     }
   },
-  mounted () {
-    // console.log('mounted')
+  wacth: {
+    options (newOptions, oldOptions) {
+      if (newOptions.src !== oldOptions.src) {
+        this.emit('quit')
+      }
+    }
   },
   beforeDestroy () {
-    // console.log('beforeDestroy')
+    this.emit('quit')
   }
 }
 </script>

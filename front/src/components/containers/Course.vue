@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import LectureList from '../widgets/LectureList'
 
 export default {
@@ -34,12 +34,13 @@ export default {
     LectureList
   },
   computed: {
-    ...mapGetters(['courseId', 'lectureId']),
+    ...mapGetters(['courseId', 'lectureId', 'userAdmin']),
+    ...mapState(['user']),
     lectures () {
       return this.$store.getters.lectures.map(l => ({
         ...l,
         url: `/course/${l.courseId}/lecture/${l.objectId}`
-      }))
+      })).concat(!this.userAdmin ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])
     }
   },
   methods: {
@@ -49,7 +50,20 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('getLectures', { courseId: this.$route.params.courseId })
+    this.$store.dispatch('track', {
+      eventName: 'course',
+      dimensions: {
+        path: this.$route.fullPath,
+        courseId: this.courseId,
+        lectureId: this.lectureId
+      }
+    })
+
+    if (!this.user) {
+      this.$router.push({ path: '/' })
+      return
+    }
+    this.$store.dispatch('getLectures')
       .then(lectures => {
         if (this.lectureId === 'index' && lectures.length > 0) {
           this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })

@@ -1,6 +1,7 @@
 import Parse from 'parse'
 
 import Lecture from './models/Lecture'
+import Event from './models/Event'
 
 const parseConfig = process.env.parseConfig
 
@@ -59,5 +60,8 @@ export default {
       .then(() => {
         commit('setUser', null)
       })
+  },
+  track ({ commit }, { eventName, dimensions, options = {} }) {
+    return Event.track(eventName, dimensions, options)
   }
 }

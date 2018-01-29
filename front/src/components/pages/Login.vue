@@ -31,8 +31,8 @@ export default {
   },
   data () {
     return {
-      email: 'leoyuholo@cse.ust.hk',
-      password: '12345678',
+      email: '',
+      password: '',
       errorMsg: ''
     }
   },
