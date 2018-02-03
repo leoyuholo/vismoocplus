@@ -20,6 +20,7 @@ services:
     environment:
       NODE_ENV: development
       # VERBOSE: 1
+    # command: sleep infinity
     command: npm run dev
   front:
     image: node:8
@@ -31,11 +32,4 @@ services:
     environment:
       NODE_ENV: development
     command: sleep infinity
-  dashboard:
-    image: node:8
-    ports:
-      - "4040:4040"
-    volumes:
-      - ./dashboard:/app
-    working_dir: /app
-    command: npm run dev
+    # command: npm run dev

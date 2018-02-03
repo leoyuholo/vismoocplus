@@ -6,9 +6,9 @@
     <q-card-separator />
     <q-card-main>
       <p>
-        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk"  />
-        <q-input v-model="password" type="password" stack-label="Password"  />
-        <q-input v-model="confirmPassword" type="password" stack-label="Confirm Password"  />
+        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" @keyup.enter="signup" />
+        <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="signup" />
+        <q-input v-model="confirmPassword" type="password" stack-label="Confirm Password" @keyup.enter="signup" />
       </p>
       <message :errorMsg="errorMsg" :successMsg="successMsg" />
     </q-card-main>

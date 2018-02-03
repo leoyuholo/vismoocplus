@@ -6,8 +6,8 @@
     <q-card-separator />
     <q-card-main>
       <p>
-        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" />
-        <q-input v-model="password" type="password" stack-label="Password" />
+        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" @keyup.enter="login" />
+        <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
       </p>
       <message :errorMsg="errorMsg" />
       <router-link class="pull-right" to="/user/forgot">Forgot Password</router-link>

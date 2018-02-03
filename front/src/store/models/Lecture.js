@@ -6,26 +6,22 @@ class Lecture extends Parse.Object {
     super('Lecture')
   }
 
-  static create ({ courseId, name, description, videoFile, posterFile }) {
-    const video = new Parse.File(`${courseId}_${name}_video`, videoFile)
-    const poster = new Parse.File(`${courseId}_${name}_poster`, posterFile)
-    return Promise.all([video.save(), poster.save()])
-      .then(() => {
-        const acl = new Parse.ACL()
-        acl.setPublicReadAccess(true)
-        acl.setWriteAccess(Parse.User.current().id, true)
+  static create ({ courseId, name, description, videoUrl, posterUrl }) {
+    const acl = new Parse.ACL()
+    acl.setPublicReadAccess(true)
+    acl.setWriteAccess(Parse.User.current().id, true)
 
-        const lecture = new Lecture()
-        lecture.setACL(acl)
+    const lecture = new Lecture()
+    lecture.setACL(acl)
 
-        return lecture.save({
-          courseId,
-          name,
-          description,
-          video,
-          poster
-        }).then(lecture => lecture.toJSON())
-      })
+    return lecture.save({
+      courseId,
+      name,
+      description,
+      videoUrl,
+      posterUrl
+    })
+      .then(lecture => lecture.toJSON())
       .catch(errorHandler)
   }
 
@@ -40,20 +36,10 @@ class Lecture extends Parse.Object {
     const query = new Parse.Query(Lecture)
     return query.get(id)
       .then(lecture => {
-        const promises = []
         Object.entries(changes).forEach(([k, v]) => {
-          if (k === 'videoFile' || k === 'posterFile') {
-            const type = k.substr(0, k.length - 4)
-            const file = new Parse.File(`${lecture.courseId}_${lecture.name}_${type}`, v)
-            promises.push(file.save())
-            lecture.set(type, file)
-          }
-          else {
-            lecture.set(k, v)
-          }
+          lecture.set(k, v)
         })
-        return Promise.all(promises)
-          .then(() => lecture.save())
+        return lecture.save()
           .then(lecture => lecture.toJSON())
       })
       .catch(errorHandler)

@@ -28,7 +28,7 @@ export default {
   data () {
     return {
       currentTime: 0,
-      volume: 1,
+      volume: 0.5,
       playbackRate: 1
     }
   },
@@ -37,6 +37,7 @@ export default {
       return {
         // videojs options
         language: 'en',
+        fluid: true,
         playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
         sources: [{
           type: 'video/mp4',
@@ -130,7 +131,7 @@ export default {
         this.emit('exitfullscreen')
       }
     },
-    onVolumeChange (player) {
+    onVolumeChange (event) {
       const newVolume = event.target.player.volume()
       this.emit('volumechange', {
         oldVolume: this.volume,

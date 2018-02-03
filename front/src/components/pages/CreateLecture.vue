@@ -5,13 +5,13 @@
       <q-input v-model="lecture.name" float-label="Lecture Name" :error="$v.lecture.name.$error" @blur="$v.lecture.name.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.description" float-label="Lecture Description" :error="$v.lecture.description.$error"  @blur="$v.lecture.description.$touch" />
+      <q-input v-model="lecture.description" float-label="Lecture Description" :error="$v.lecture.description.$error" @blur="$v.lecture.description.$touch" />
     </q-field>
-    <q-field helper="Video">
-      <input name="video" type="file" @change="processFile($event, 'video')">
+    <q-field>
+      <q-input v-model="lecture.videoUrl" float-label="Lecture Video URL" :error="$v.lecture.videoUrl.$error" @blur="$v.lecture.videoUrl.$touch" />
     </q-field>
-    <q-field helper="Poster">
-      <input name="poster" type="file" @change="processFile($event, 'poster')">
+    <q-field>
+      <q-input v-model="lecture.posterUrl" float-label="Lecture Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
     </q-field>
     <q-btn color="primary" @click="submit">submit</q-btn>
   </div>
@@ -20,21 +20,31 @@
 <script>
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
-import { alert } from '../../helpers'
+import { delayPromise } from '../../helpers'
+import Message from '../widgets/Message'
 
 export default {
+  components: {
+    Message
+  },
   data () {
     return {
       lecture: {
         name: '',
-        description: ''
-      }
+        description: '',
+        videoUrl: '',
+        posterUrl: ''
+      },
+      errorMsg: '',
+      successMsg: ''
     }
   },
   validations: {
     lecture: {
       name: { required },
-      description: { required }
+      description: { required },
+      videoUrl: { required },
+      posterUrl: { required }
     }
   },
   computed: {
@@ -42,17 +52,12 @@ export default {
   },
   methods: {
     submit () {
-      const lecture = {
-        ...this.lecture,
-        courseId: this.courseId,
-        videoFile: this.videoFile,
-        posterFile: this.posterFile
-      }
-      this.$store.dispatch('createLecture', lecture)
-        .then(lecture =>
-          alert('positive', `Lecture ${lecture.name} created. Redirecting...`)
+      this.$store.dispatch('createLecture', this.lecture)
+        .then(lecture => {
+          this.successMsg = `Lecture ${lecture.name} created. Redirecting...`
+          return delayPromise(2000)
             .then(() => this.$router.push({ path: `/studio/${this.courseId}/lecture/${lecture.objectId}/edit` }))
-        )
+        })
     },
     processFile (event, type) {
       const file = event.target.files ? event.target.files[0] : undefined

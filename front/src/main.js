@@ -11,18 +11,56 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 // require(`quasar/dist/quasar.ie.${__THEME}.css`)
 
 import Vue from 'vue'
-// import Quasar from 'quasar'
-import Quasar, * as All from 'quasar'
+import Quasar, {
+  QBtn,
+  QIcon,
+  QLayout,
+  QToolbar,
+  QToolbarTitle,
+  QList,
+  QListHeader,
+  QSideLink,
+  QItemSide,
+  QItemMain,
+  QField,
+  QInput,
+  QCard,
+  QCardTitle,
+  QCardSeparator,
+  QCardMain,
+  QCardActions
+} from 'quasar'
+// import Quasar, * as All from 'quasar'
 
 import router from './router'
 import store from './store'
 
 Vue.config.productionTip = false
-// Vue.use(Quasar) // Install Quasar Framework
 Vue.use(Quasar, {
-  components: All,
-  directives: All
+  components: {
+    QBtn,
+    QIcon,
+    QLayout,
+    QToolbar,
+    QToolbarTitle,
+    QList,
+    QListHeader,
+    QSideLink,
+    QItemSide,
+    QItemMain,
+    QField,
+    QInput,
+    QCard,
+    QCardTitle,
+    QCardSeparator,
+    QCardMain,
+    QCardActions
+  }
 })
+// Vue.use(Quasar, {
+//   components: All,
+//   directives: All
+// })
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')

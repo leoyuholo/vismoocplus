@@ -1,0 +1,42 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./volumes/mongo:/data/db
+    logging:
+      driver: none
+  web:
+    build: ./web
+    restart: always
+    depends_on:
+      - mongo
+    working_dir: /app
+    environment:
+      NODE_ENV: production
+  nginx:
+    image: nginx:1
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - web
+    volumes:
+      - ./video:/usr/share/nginx/video
+      - ./dist:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+    logging:
+      driver: none
+  mongobackup:
+    image: requilence/mongodb-backup
+    environment:
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      INIT_BACKUP: 'yes'
+      MAX_BACKUPS: 10
+      CRON_TIME: 0 0 5 * *
+    volumes:
+      - ./volumes/mongobackup:/backup

@@ -6,7 +6,7 @@
     <q-card-separator />
     <q-card-main>
       <p>
-        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" />
+        <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" @keyup.enter="resetPassword" />
       </p>
       <message :errorMsg="errorMsg" :successMsg="successMsg" />
     </q-card-main>
