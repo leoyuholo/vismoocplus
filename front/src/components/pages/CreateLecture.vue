@@ -13,6 +13,7 @@
     <q-field>
       <q-input v-model="lecture.posterUrl" float-label="Lecture Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
     </q-field>
+    <message :errorMsg="errorMsg" :successMsg="successMsg" />
     <q-btn color="primary" @click="submit">submit</q-btn>
   </div>
 </template>

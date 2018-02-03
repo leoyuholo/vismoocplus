@@ -4,9 +4,9 @@ const ParseDashboard = require('parse-dashboard')
 const parseServer = require('parse-server')
 const ParseServer = parseServer.ParseServer
 
-const app = express()
+const cloudcode = require('./cloudcode')
 
-app.enable('trust proxy')
+const app = express()
 
 const parse = new ParseServer({
   databaseURI: config.get('parseServer.databaseURI'),
@@ -18,7 +18,8 @@ const parse = new ParseServer({
   emailAdapter: config.get('parseServer.emailAdapter'),
   verifyUserEmails: config.get('parseServer.verifyUserEmails'),
   preventLoginWithUnverifiedEmail: config.get('parseServer.preventLoginWithUnverifiedEmail'),
-  allowClientClassCreation: config.get('parseServer.allowClientClassCreation')
+  allowClientClassCreation: config.get('parseServer.allowClientClassCreation'),
+  cloud: cloudcode
 })
 
 const dashboard = new ParseDashboard({
