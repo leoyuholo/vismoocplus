@@ -1,17 +1,18 @@
 <template>
   <div>
-    <vue-video-player class="video-player-box"
-                   ref="videoPlayer"
-                   :options="playerOptions"
-                   :playsinline="true"
+    <vue-video-player
+      class="video-player-box"
+      ref="videoPlayer"
+      :options="playerOptions"
+      :playsinline="true"
 
-                   @pause="onPlayerPause($event)"
-                   @ended="onPlayerEnded($event)"
-                   @waiting="onPlayerWaiting($event)"
-                   @playing="onPlayerPlaying($event)"
-                   @timeupdate="onPlayerTimeupdate($event)"
+      @pause="onPlayerPause($event)"
+      @ended="onPlayerEnded($event)"
+      @waiting="onPlayerWaiting($event)"
+      @playing="onPlayerPlaying($event)"
+      @timeupdate="onPlayerTimeupdate($event)"
 
-                   @ready="playerReadied">
+      @ready="playerReadied">
     </vue-video-player>
   </div>
 </template>
@@ -19,6 +20,7 @@
 <script>
 import { videoPlayer } from 'vue-video-player'
 import 'videojs-hotkeys'
+import { debounce } from 'lodash'
 import { nextItem, previousItem } from '../../helpers'
 
 export default {
@@ -29,10 +31,24 @@ export default {
   },
   data () {
     return {
-      currentTime: 0,
-      volume: 0.5,
-      playbackRate: 1,
-      playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
+      fullscreen: false,
+      playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
+      events: [
+        'ready',
+        'waited',
+        'play',
+        'pause',
+        'end',
+        'seek',
+        'enterfullscreen',
+        'exitfullscreen',
+        'volumechange',
+        'ratechange',
+        'quit',
+        'switch',
+        'close',
+        'heartbeat'
+      ]
     }
   },
   computed: {
@@ -42,34 +58,34 @@ export default {
         language: 'en',
         fluid: true,
         playbackRates: this.playbackRates,
+
         sources: [{
           type: 'video/mp4',
           src: this.options.src
         }],
-        poster: this.options.poster
+        poster: this.options.poster,
+
+        autoplay: this.options.autoplay || false,
+        muted: this.options.muted || false
       }
     }
   },
   methods: {
+    loadParamsFromOptions () {
+      this.previousTime = this.options.currentTime || 0
+      this.currentTime = this.options.currentTime || 0
+      this.playbackRate = this.options.playbackRate || 1
+      this.volume = this.options.volume || 0.5
+      this.muted = this.options.muted || false
+    },
+    heartbeat: debounce((emit) => { emit('heartbeat') }, 10000),
     emit (type, props) {
-      // events: [
-      //   'ready',
-      //   'waited',
-      //   'play',
-      //   'pause',
-      //   'end',
-      //   'seek',
-      //   'enterfullscreen',
-      //   'exitfullscreen',
-      //   'volumechange',
-      //   'ratechange',
-      //   'quit'
-      // ]
       const event = {
         type,
         currentTime: this.currentTime,
         playbackRate: this.playbackRate,
         volume: this.volume,
+        muted: this.muted,
         fullscreen: this.fullscreen,
         waitSince: this.waitSince
       }
@@ -86,9 +102,16 @@ export default {
         })
       }
 
+      this.heartbeat(this.emit)
+
       return this.$emit(type, event)
     },
     playerReadied (player) {
+      player.on('seeking', this.onSeeking)
+      player.on('volumechange', this.onVolumeChange)
+      player.on('ratechange', this.onRateChange)
+      player.on('fullscreenchange', this.onFullscreenChange)
+
       player.hotkeys({
         volumeStep: 0.1,
         seekStep: 5,
@@ -123,30 +146,10 @@ export default {
         }, false)
       }
 
-      if (this.options.volume !== undefined) {
-        player.volume(this.options.volume)
-        this.programVolumeChange = true
-      }
-
-      if (this.options.currentTime !== undefined) {
-        player.currentTime(this.options.currentTime)
-        this.programSeek = true
-      }
-
-      if (this.options.playbackRate !== undefined) {
-        player.playbackRate(this.options.playbackRate)
-        this.programPlaybackRate = true
-      }
-
-      this.currentTime = player.currentTime()
-      this.volume = player.volume()
-      this.playbackRate = player.playbackRate()
-      this.fullscreen = player.isFullscreen()
-
-      player.on('seeking', this.onSeeking)
-      player.on('volumechange', this.onVolumeChange)
-      player.on('ratechange', this.onRateChange)
-      player.on('fullscreenchange', this.onFullscreenChange)
+      player.volume(this.volume)
+      player.muted(this.muted)
+      player.currentTime(this.currentTime)
+      player.playbackRate(this.playbackRate)
 
       this.emit('ready')
     },
@@ -154,6 +157,7 @@ export default {
       this.waitSince = Date.now()
     },
     onPlayerTimeupdate (player) {
+      this.previousTime = this.currentTime
       this.currentTime = player.currentTime()
 
       if (this.waitSince) {
@@ -161,7 +165,8 @@ export default {
         if (waitEnd - this.waitSince > 1000) {
           this.emit('waited', {
             waitSince: this.waitSince,
-            waitEnd: Date.now()
+            waitEnd,
+            waitLength: waitEnd - this.waitSince
           })
         }
         this.waitSince = undefined
@@ -177,14 +182,16 @@ export default {
       this.emit('end')
     },
     onSeeking (event) {
-      if (this.programSeek) {
-        this.programSeek = false
-        return
+      const oldTime = this.previousTime
+      const newTime = event.target.player.currentTime()
+
+      if (oldTime !== newTime) {
+        this.emit('seek', {
+          oldTime,
+          newTime,
+          seekLength: newTime - oldTime
+        })
       }
-      this.emit('seek', {
-        oldTime: this.currentTime,
-        newTime: event.target.player.currentTime()
-      })
     },
     onFullscreenChange (event) {
       if (event.target.player.isFullscreen()) {
@@ -197,38 +204,50 @@ export default {
       }
     },
     onVolumeChange (event) {
-      if (this.programVolumeChange) {
-        this.programVolumeChange = false
-        return
-      }
       const newVolume = event.target.player.volume()
-      this.emit('volumechange', {
-        oldVolume: this.volume,
-        newVolume
-      })
+      const muted = event.target.player.muted()
+
+      if (this.volume !== newVolume || this.muted !== muted) {
+        this.emit('volumechange', {
+          oldVolume: this.volume,
+          newVolume,
+          muted
+        })
+      }
+
       this.volume = newVolume
+      this.muted = muted
     },
     onRateChange (event) {
-      if (this.programPlaybackRate) {
-        this.programPlaybackRate = false
-        return
-      }
       const newRate = event.target.player.playbackRate()
-      this.emit('ratechange', {
-        oldRate: this.playbackRate,
-        newRate
-      })
+
+      if (this.playbackRate !== newRate) {
+        this.emit('ratechange', {
+          oldRate: this.playbackRate,
+          newRate
+        })
+      }
+
       this.playbackRate = newRate
+    },
+    beforeunload () {
+      this.emit('close')
     }
   },
   watch: {
     options (newOptions, oldOptions) {
       if (newOptions.src !== oldOptions.src) {
-        this.emit('quit', oldOptions.metaInfo)
+        this.emit('switch', oldOptions.metaInfo)
       }
+      this.loadParamsFromOptions()
     }
   },
+  mounted () {
+    window.addEventListener('beforeunload', this.beforeunload)
+    this.loadParamsFromOptions()
+  },
   beforeDestroy () {
+    window.removeEventListener('beforeunload', this.beforeunload)
     this.emit('quit')
   }
 }

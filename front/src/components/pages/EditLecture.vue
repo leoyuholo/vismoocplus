@@ -60,25 +60,22 @@ export default {
       }
 
       this.$store.dispatch('updateLecture', { id: this.lectureId, changes: this.lecture })
-        .then(() => {
-          this.successMsg = `Lecture ${this.lecture.name} updated.`
-        })
+        .then(() => { this.successMsg = `Lecture ${this.lecture.name} updated.` })
         .then(() => delayPromise(2000))
-        .then(() => {
-          this.successMsg = ''
-        })
+        .then(() => { this.successMsg = '' })
     },
     remove () {
       this.$store.dispatch('deleteLecture', { id: this.lectureId })
-        .then(() => {
-          this.successMsg = `Lecture ${this.lecture.name} deleted. Redirecting...`
-        })
+        .then(() => { this.successMsg = `Lecture ${this.lecture.name} deleted. Redirecting...` })
         .then(() => delayPromise(2000))
         .then(() => this.$router.push({ path: `/studio/${this.courseId}/new` }))
     }
   },
   mounted () {
-    this.$store.watch((store, getters) => { return getters.lecture }, lecture => { this.lecture = Object.assign({}, lecture) })
+    this.$store.watch(
+      (store, getters) => { return getters.lecture },
+      lecture => { this.lecture = Object.assign({}, lecture) }
+    )
   }
 }
 </script>

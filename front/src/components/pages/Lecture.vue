@@ -4,16 +4,20 @@
         v-if="lecture"
         :options="videoOptions"
 
+        @ready="trackVideoAction($event)"
         @waited="trackVideoAction($event)"
         @play="trackVideoAction($event)"
         @pause="trackVideoAction($event)"
-        @end="trackVideoAction($event)"
-        @seek="trackVideoAction($event)"
-        @quit="quit($event)"
+        @end="trackAndSave($event)"
+        @seek="trackAndSave($event)"
         @enterfullscreen="trackVideoAction($event)"
         @exitfullscreen="trackVideoAction($event)"
-        @volumechange="trackVideoAction($event)"
-        @ratechange="trackVideoAction($event)"
+        @volumechange="trackAndSave($event)"
+        @ratechange="trackAndSave($event)"
+        @quit="trackAndSave($event)"
+        @switch="trackAndSave($event)"
+        @close="trackAndSave($event)"
+        @heartbeat="trackVideoAction($event)"
       />
     </div>
 </template>
@@ -30,15 +34,19 @@ export default {
     ...mapGetters(['courseId', 'lectureId', 'lecture']),
     ...mapState(['userSetting']),
     videoOptions () {
-      if (!this.lecture) return {}
+      if (!this.lecture) { return {} }
 
       return {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
         caption: this.lecture.captionUrl,
-        playbackRate: this.userSetting.playbackRate,
-        volume: this.userSetting.volume,
-        currentTime: this.userSetting[`progress_${this.lectureId}`] ? this.userSetting[`progress_${this.lectureId}`].currentTime : 0,
+
+        playbackRate: this.userSetting.get('playbackRate'),
+        volume: this.userSetting.get('volume'),
+        muted: this.userSetting.get('muted'),
+
+        currentTime: this.$store.getters.lectureProgress(this.lectureId),
+
         metaInfo: {
           lectureId: this.lectureId,
           courseId: this.courseId
@@ -59,21 +67,24 @@ export default {
 
       return this.$store.dispatch('track', payload)
     },
-    quit (event) {
-      const userSettingChanges = {
-        volume: event.volume,
+    saveUserSetting (event) {
+      const changes = {
         playbackRate: event.playbackRate,
-        [`progress_${event.lectureId}`]: {
-          lastVisit: Date.now(),
-          currentTime: event.currentTime
-        },
+        volume: event.volume,
+        muted: event.muted,
         lastLecture: event.lectureId,
         lastCourse: event.courseId
       }
+      const lectureProgress = {
+        [event.lectureId]: event.currentTime
+      }
 
+      return this.$store.dispatch('saveUserSetting', { changes, lectureProgress })
+    },
+    trackAndSave (event) {
       return Promise.all([
         this.trackVideoAction(event),
-        this.$store.dispatch('saveUserSetting', userSettingChanges)
+        this.saveUserSetting(event)
       ])
     }
   }

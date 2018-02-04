@@ -50,12 +50,8 @@ export default {
       }
 
       this.$store.dispatch('resend', { email: this.email })
-        .then(() => {
-          this.successMsg = 'Success, please check email.'
-        })
-        .catch(error => {
-          this.errorMsg = error.message
-        })
+        .then(() => { this.successMsg = 'Success, please check email.' })
+        .catch(error => { this.errorMsg = error.message })
     }
   }
 }

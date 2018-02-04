@@ -6,34 +6,22 @@ class UserSetting extends Parse.Object {
     super('UserSetting')
   }
 
-  static defaultSetting () {
-    return {
-      volume: 0.5,
-      playbackRate: 1
-    }
-  }
-
-  static create () {
-    const userSetting = new UserSetting()
-    userSetting.set('user', Parse.User.current())
-    return userSetting.save(UserSetting.defaultSetting())
-      .then(userSetting => userSetting.toJSON())
-      .catch(errorHandler)
-  }
-
   static get () {
-    const query = new Parse.Query(UserSetting)
-    query.equalTo('user', Parse.User.current())
-    return query.find()
-      .then(userSettings => userSettings.length === 0 ? UserSetting.create() : userSettings[0].toJSON())
-      .catch(errorHandler)
-  }
+    const user = Parse.User.current()
+    if (user.get('userSetting')) {
+      return user.get('userSetting')
+        .fetch()
+        .catch(errorHandler)
+    }
 
-  static save (id, changes) {
-    const query = new Parse.Query(UserSetting)
-    return query.get(id)
-      .then(userSetting => userSetting.save(changes))
-      .then(userSetting => userSetting.toJSON())
+    const userSetting = new UserSetting()
+    userSetting.setACL(user)
+    return userSetting.save()
+      .then(userSetting => {
+        user.set('userSetting', userSetting)
+        return user.save()
+          .then(() => userSetting)
+      })
       .catch(errorHandler)
   }
 }

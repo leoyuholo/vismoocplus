@@ -14,21 +14,28 @@ export default {
 
     patch()
 
-    commit('init', Parse.User.current())
-
-    return dispatch('getUserSetting')
+    return commit('init', Parse.User.current())
   },
   getUserSetting ({ commit }) {
     return UserSetting.get()
       .then(userSetting => commit('setUserSetting', userSetting))
   },
-  saveUserSetting ({ commit, state }, changes) {
+  saveUserSetting ({ commit, state }, { changes, lectureProgress }) {
     if (!state.userSetting) {
       return
     }
 
-    return UserSetting.save(state.userSetting.objectId, changes)
+    if (lectureProgress) {
+      Object.entries(lectureProgress).forEach(([k, v]) => {
+        changes['progress_' + k] = v
+      })
+    }
+
+    return state.userSetting.save(changes)
       .then(userSetting => commit('setUserSetting', userSetting))
+  },
+  track ({ commit }, { eventName, dimensions, options = {} }) {
+    return Event.track(eventName, dimensions, options)
   },
   createLecture ({ commit }, lecture) {
     return Lecture.create(lecture)
@@ -66,24 +73,16 @@ export default {
   },
   login ({ commit }, { email, password }) {
     return Parse.User.logIn(email, password)
-      .then(user => {
-        commit('setUser', user)
-        return user
-      })
+      .then(user => commit('setUser', user))
   },
   forgot ({ commit }, { email }) {
     return Parse.User.requestPasswordReset(email)
   },
   logout ({ commit }) {
     return Parse.User.logOut()
-      .then(() => {
-        commit('setUser', null)
-      })
+      .then(() => commit('setUser', null))
   },
   resend ({ commit }, { email }) {
     return Parse.User.resendVerificationEmail(email)
-  },
-  track ({ commit }, { eventName, dimensions, options = {} }) {
-    return Event.track(eventName, dimensions, options)
   }
 }

@@ -59,12 +59,8 @@ export default {
       }
 
       this.$store.dispatch('signup', { email: this.email, password: this.password })
-        .then(user => {
-          this.successMsg = 'Sign Up success, please check email.'
-        })
-        .catch(error => {
-          this.errorMsg = error.message
-        })
+        .then(() => { this.successMsg = 'Sign Up success, please check email.' })
+        .catch(error => { this.errorMsg = error.message })
     }
   }
 }

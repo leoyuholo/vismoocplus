@@ -9,11 +9,7 @@ Vue.use(Vuex)
 
 const state = {
   lectures: [],
-  userSetting: {
-    volume: 0.5,
-    playbackRate: 1
-  },
-  closing: false
+  userSetting: {}
 }
 
 const store = new Vuex.Store({
