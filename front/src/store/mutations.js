@@ -8,13 +8,13 @@ export default {
     state.lectures = lectures
   },
   setLecture (state, lecture) {
-    state.lectures = state.lectures.map(l => l.id === lecture.id ? lecture : l)
+    state.lectures = state.lectures.map(l => l.objectId === lecture.objectId ? lecture : l)
   },
   addLecture (state, lecture) {
     state.lectures = state.lectures.concat(lecture)
   },
   removeLecture (state, id) {
-    state.lectures = state.lectures.filter(l => l.id !== id)
+    state.lectures = state.lectures.filter(l => l.objectId !== id)
   },
   setUser (state, user) {
     state.user = user

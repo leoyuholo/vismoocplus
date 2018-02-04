@@ -112,6 +112,15 @@ export default {
         }
       })
 
+      if (this.options.caption) {
+        player.addRemoteTextTrack({
+          kind: 'captions',
+          label: 'English',
+          srclang: 'en',
+          src: this.options.caption
+        }, false)
+      }
+
       this.currentTime = player.currentTime()
       this.volume = player.volume()
       this.playbackRate = player.playbackRate()

@@ -2,16 +2,19 @@
   <div class="layout-padding">
     <p class="caption">Edit Lecture</p>
     <q-field>
-      <q-input v-model="lecture.name" float-label="Lecture Name" :error="$v.lecture.name.$error"  @blur="$v.lecture.name.$touch" />
+      <q-input v-model="lecture.name" float-label="Name" :error="$v.lecture.name.$error"  @blur="$v.lecture.name.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.description" float-label="Lecture Description" :error="$v.lecture.description.$error"  @blur="$v.lecture.description.$touch" />
+      <q-input v-model="lecture.description" float-label="Description" :error="$v.lecture.description.$error"  @blur="$v.lecture.description.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.videoUrl" float-label="Lecture Video URL" :error="$v.lecture.videoUrl.$error" @blur="$v.lecture.videoUrl.$touch" />
+      <q-input v-model="lecture.videoUrl" float-label="Video URL" :error="$v.lecture.videoUrl.$error" @blur="$v.lecture.videoUrl.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.posterUrl" float-label="Lecture Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
+      <q-input v-model="lecture.posterUrl" float-label="Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
+    </q-field>
+    <q-field>
+      <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
     <message :errorMsg="errorMsg" :successMsg="successMsg" />
     <q-btn color="primary" @click="save">Save</q-btn>
@@ -51,7 +54,12 @@ export default {
   },
   methods: {
     save () {
-      this.$store.dispatch('updateLecture', { id: this.lectureId, lecture: this.lecture })
+      if (this.$v.$invalid) {
+        this.errorMsg = 'Missing lecture attributes.'
+        return
+      }
+
+      this.$store.dispatch('updateLecture', { id: this.lectureId, changes: this.lecture })
         .then(() => {
           this.successMsg = `Lecture ${this.lecture.name} updated.`
         })

@@ -33,7 +33,8 @@ export default {
       if (!this.lecture) return {}
       return {
         src: this.lecture.videoUrl,
-        poster: this.lecture.posterUrl
+        poster: this.lecture.posterUrl,
+        caption: this.lecture.captionUrl
       }
     }
   },

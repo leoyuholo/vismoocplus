@@ -29,9 +29,9 @@ export default {
         return lectures
       })
   },
-  updateLecture ({ dispatch }, { id, changes }) {
+  updateLecture ({ commit }, { id, changes }) {
     return Lecture.update(id, changes)
-      .then(() => dispatch('getLectures'))
+      .then(lecture => commit('setLecture', lecture))
   },
   deleteLecture ({ commit }, { id }) {
     return Lecture.destroy(id)

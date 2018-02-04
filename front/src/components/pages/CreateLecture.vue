@@ -2,16 +2,19 @@
   <div class="layout-padding">
     <p class="caption">Create Lecture</p>
     <q-field>
-      <q-input v-model="lecture.name" float-label="Lecture Name" :error="$v.lecture.name.$error" @blur="$v.lecture.name.$touch" />
+      <q-input v-model="lecture.name" float-label="Name" :error="$v.lecture.name.$error" @blur="$v.lecture.name.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.description" float-label="Lecture Description" :error="$v.lecture.description.$error" @blur="$v.lecture.description.$touch" />
+      <q-input v-model="lecture.description" float-label="Description" :error="$v.lecture.description.$error" @blur="$v.lecture.description.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.videoUrl" float-label="Lecture Video URL" :error="$v.lecture.videoUrl.$error" @blur="$v.lecture.videoUrl.$touch" />
+      <q-input v-model="lecture.videoUrl" float-label="Video URL" :error="$v.lecture.videoUrl.$error" @blur="$v.lecture.videoUrl.$touch" />
     </q-field>
     <q-field>
-      <q-input v-model="lecture.posterUrl" float-label="Lecture Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
+      <q-input v-model="lecture.posterUrl" float-label="Poster URL" :error="$v.lecture.posterUrl.$error" @blur="$v.lecture.posterUrl.$touch" />
+    </q-field>
+    <q-field>
+      <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
     <message :errorMsg="errorMsg" :successMsg="successMsg" />
     <q-btn color="primary" @click="submit">submit</q-btn>
@@ -34,7 +37,8 @@ export default {
         name: '',
         description: '',
         videoUrl: '',
-        posterUrl: ''
+        posterUrl: '',
+        captionUrl: ''
       },
       errorMsg: '',
       successMsg: ''
@@ -53,10 +57,20 @@ export default {
   },
   methods: {
     submit () {
-      this.$store.dispatch('createLecture', this.lecture)
+      if (this.$v.$invalid) {
+        this.errorMsg = 'Missing lecture attributes.'
+        return
+      }
+
+      const lecture = {
+        ...this.lecture,
+        courseId: this.courseId
+      }
+
+      this.$store.dispatch('createLecture', lecture)
         .then(lecture => {
           this.successMsg = `Lecture ${lecture.name} created. Redirecting...`
-          return delayPromise(2000)
+          delayPromise(2000)
             .then(() => this.$router.push({ path: `/studio/${this.courseId}/lecture/${lecture.objectId}/edit` }))
         })
     },
