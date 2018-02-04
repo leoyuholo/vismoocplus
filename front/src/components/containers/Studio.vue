@@ -37,7 +37,7 @@ export default {
     ...mapGetters(['courseId']),
     ...mapState(['user']),
     lectures () {
-      return this.$store.getters.lectures.map(l => ({
+      return this.$store.state.lectures.map(l => ({
         ...l,
         url: `/studio/${l.courseId}/lecture/${l.objectId}/edit`
       })).concat([{id: 'new', name: 'Create New Lecture', url: `/studio/${this.courseId}/new`}])

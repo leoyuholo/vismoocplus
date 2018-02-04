@@ -37,7 +37,7 @@ export default {
     ...mapGetters(['courseId', 'lectureId', 'userAdmin']),
     ...mapState(['user']),
     lectures () {
-      return this.$store.getters.lectures.map(l => ({
+      return this.$store.state.lectures.map(l => ({
         ...l,
         url: `/course/${l.courseId}/lecture/${l.objectId}`
       })).concat(!this.userAdmin ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])
@@ -50,7 +50,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$route.fullPath)
     this.$store.dispatch('track', {
       eventName: 'course',
       dimensions: {

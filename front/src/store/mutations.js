@@ -1,7 +1,6 @@
 
 export default {
   init (state, user) {
-    state.started = true
     state.user = user
   },
   setLectures (state, lectures) {
@@ -18,5 +17,8 @@ export default {
   },
   setUser (state, user) {
     state.user = user
+  },
+  setUserSetting (state, userSetting) {
+    state.userSetting = userSetting
   }
 }

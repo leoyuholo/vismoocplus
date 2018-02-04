@@ -92,7 +92,7 @@ Quasar.start(() => {
     router,
     render: h => h(require('./App').default),
     created () {
-      this.$store.dispatch('init')
+      return this.$store.dispatch('init')
     }
   })
 })

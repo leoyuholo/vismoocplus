@@ -2,18 +2,33 @@ import Parse from 'parse'
 
 import Lecture from './models/Lecture'
 import Event from './models/Event'
+import UserSetting from './models/UserSetting'
 import patch from '../patches'
 
 const parseConfig = process.env.parseConfig
 
 export default {
-  init ({ commit }) {
+  init ({ dispatch, commit }) {
     Parse.initialize(parseConfig.appId)
     Parse.serverURL = parseConfig.serverURL
 
     patch()
 
     commit('init', Parse.User.current())
+
+    return dispatch('getUserSetting')
+  },
+  getUserSetting ({ commit }) {
+    return UserSetting.get()
+      .then(userSetting => commit('setUserSetting', userSetting))
+  },
+  saveUserSetting ({ commit, state }, changes) {
+    if (!state.userSetting) {
+      return
+    }
+
+    return UserSetting.save(state.userSetting.objectId, changes)
+      .then(userSetting => commit('setUserSetting', userSetting))
   },
   createLecture ({ commit }, lecture) {
     return Lecture.create(lecture)

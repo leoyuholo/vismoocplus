@@ -4,13 +4,12 @@
         v-if="lecture"
         :options="videoOptions"
 
-        @ready="trackVideoAction($event)"
         @waited="trackVideoAction($event)"
         @play="trackVideoAction($event)"
         @pause="trackVideoAction($event)"
         @end="trackVideoAction($event)"
         @seek="trackVideoAction($event)"
-        @quit="trackVideoAction($event)"
+        @quit="quit($event)"
         @enterfullscreen="trackVideoAction($event)"
         @exitfullscreen="trackVideoAction($event)"
         @volumechange="trackVideoAction($event)"
@@ -20,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import VideoPlayer from '../widgets/VideoPlayer'
 
 export default {
@@ -29,25 +28,53 @@ export default {
   },
   computed: {
     ...mapGetters(['courseId', 'lectureId', 'lecture']),
+    ...mapState(['userSetting']),
     videoOptions () {
       if (!this.lecture) return {}
+
       return {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
-        caption: this.lecture.captionUrl
+        caption: this.lecture.captionUrl,
+        playbackRate: this.userSetting.playbackRate,
+        volume: this.userSetting.volume,
+        currentTime: this.userSetting[`progress_${this.lectureId}`] ? this.userSetting[`progress_${this.lectureId}`].currentTime : 0,
+        metaInfo: {
+          lectureId: this.lectureId,
+          courseId: this.courseId
+        }
       }
     }
   },
   methods: {
     trackVideoAction (event) {
       const { type, ...dimensions } = event
-      this.$store.dispatch('track', {
+      const payload = {
         eventName: type,
         dimensions,
         options: {
           attachPlatformInfo: false
         }
-      })
+      }
+
+      return this.$store.dispatch('track', payload)
+    },
+    quit (event) {
+      const userSettingChanges = {
+        volume: event.volume,
+        playbackRate: event.playbackRate,
+        [`progress_${event.lectureId}`]: {
+          lastVisit: Date.now(),
+          currentTime: event.currentTime
+        },
+        lastLecture: event.lectureId,
+        lastCourse: event.courseId
+      }
+
+      return Promise.all([
+        this.trackVideoAction(event),
+        this.$store.dispatch('saveUserSetting', userSettingChanges)
+      ])
     }
   }
 }

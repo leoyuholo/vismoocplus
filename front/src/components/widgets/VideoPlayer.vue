@@ -74,6 +74,12 @@ export default {
         waitSince: this.waitSince
       }
 
+      if (this.options.metaInfo) {
+        Object.entries(this.options.metaInfo).forEach(([k, v]) => {
+          event[k] = v
+        })
+      }
+
       if (props) {
         Object.entries(props).forEach(([k, v]) => {
           event[k] = v
@@ -83,15 +89,11 @@ export default {
       return this.$emit(type, event)
     },
     playerReadied (player) {
-      player.on('seeking', this.onSeeking)
-      player.on('volumechange', this.onVolumeChange)
-      player.on('ratechange', this.onRateChange)
-      player.on('fullscreenchange', this.onFullscreenChange)
-
       player.hotkeys({
         volumeStep: 0.1,
         seekStep: 5,
         enableModifiersForNumbers: false,
+        enableVolumeScroll: false,
         customKeys: {
           rightAngle: {
             key: (event) => {
@@ -121,10 +123,30 @@ export default {
         }, false)
       }
 
+      if (this.options.volume !== undefined) {
+        player.volume(this.options.volume)
+        this.programVolumeChange = true
+      }
+
+      if (this.options.currentTime !== undefined) {
+        player.currentTime(this.options.currentTime)
+        this.programSeek = true
+      }
+
+      if (this.options.playbackRate !== undefined) {
+        player.playbackRate(this.options.playbackRate)
+        this.programPlaybackRate = true
+      }
+
       this.currentTime = player.currentTime()
       this.volume = player.volume()
       this.playbackRate = player.playbackRate()
       this.fullscreen = player.isFullscreen()
+
+      player.on('seeking', this.onSeeking)
+      player.on('volumechange', this.onVolumeChange)
+      player.on('ratechange', this.onRateChange)
+      player.on('fullscreenchange', this.onFullscreenChange)
 
       this.emit('ready')
     },
@@ -135,10 +157,13 @@ export default {
       this.currentTime = player.currentTime()
 
       if (this.waitSince) {
-        this.emit('waited', {
-          waitSince: this.waitSince,
-          waitEnd: Date.now()
-        })
+        const waitEnd = Date.now()
+        if (waitEnd - this.waitSince > 1000) {
+          this.emit('waited', {
+            waitSince: this.waitSince,
+            waitEnd: Date.now()
+          })
+        }
         this.waitSince = undefined
       }
     },
@@ -152,6 +177,10 @@ export default {
       this.emit('end')
     },
     onSeeking (event) {
+      if (this.programSeek) {
+        this.programSeek = false
+        return
+      }
       this.emit('seek', {
         oldTime: this.currentTime,
         newTime: event.target.player.currentTime()
@@ -168,6 +197,10 @@ export default {
       }
     },
     onVolumeChange (event) {
+      if (this.programVolumeChange) {
+        this.programVolumeChange = false
+        return
+      }
       const newVolume = event.target.player.volume()
       this.emit('volumechange', {
         oldVolume: this.volume,
@@ -176,6 +209,10 @@ export default {
       this.volume = newVolume
     },
     onRateChange (event) {
+      if (this.programPlaybackRate) {
+        this.programPlaybackRate = false
+        return
+      }
       const newRate = event.target.player.playbackRate()
       this.emit('ratechange', {
         oldRate: this.playbackRate,
@@ -187,7 +224,7 @@ export default {
   watch: {
     options (newOptions, oldOptions) {
       if (newOptions.src !== oldOptions.src) {
-        this.emit('quit')
+        this.emit('quit', oldOptions.metaInfo)
       }
     }
   },

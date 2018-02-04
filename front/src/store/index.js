@@ -8,8 +8,12 @@ import mutations from './mutations'
 Vue.use(Vuex)
 
 const state = {
-  started: false,
-  lectures: []
+  lectures: [],
+  userSetting: {
+    volume: 0.5,
+    playbackRate: 1
+  },
+  closing: false
 }
 
 const store = new Vuex.Store({
