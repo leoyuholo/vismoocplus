@@ -22,9 +22,39 @@ function delayPromise (ms) {
   })
 }
 
+function nextItem (items, item) {
+  const index = items.indexOf(item)
+  if (index === -1) {
+    return item
+  }
+  const newIndex = index + 1
+  if (newIndex >= items.length) {
+    return items[items.length - 1]
+  }
+  else {
+    return items[newIndex]
+  }
+}
+
+function previousItem (items, item) {
+  const index = items.indexOf(item)
+  if (index === -1) {
+    return item
+  }
+  const newIndex = index - 1
+  if (newIndex < 0) {
+    return items[0]
+  }
+  else {
+    return items[newIndex]
+  }
+}
+
 export {
   errorHandler,
   isValidHKUSTEmail,
   defaultEmailDomain,
-  delayPromise
+  delayPromise,
+  nextItem,
+  previousItem
 }

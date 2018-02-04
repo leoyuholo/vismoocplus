@@ -18,6 +18,8 @@
 
 <script>
 import { videoPlayer } from 'vue-video-player'
+import 'videojs-hotkeys'
+import { nextItem, previousItem } from '../../helpers'
 
 export default {
   name: 'video-player',
@@ -29,7 +31,8 @@ export default {
     return {
       currentTime: 0,
       volume: 0.5,
-      playbackRate: 1
+      playbackRate: 1,
+      playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
     }
   },
   computed: {
@@ -38,7 +41,7 @@ export default {
         // videojs options
         language: 'en',
         fluid: true,
-        playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
+        playbackRates: this.playbackRates,
         sources: [{
           type: 'video/mp4',
           src: this.options.src
@@ -84,6 +87,30 @@ export default {
       player.on('volumechange', this.onVolumeChange)
       player.on('ratechange', this.onRateChange)
       player.on('fullscreenchange', this.onFullscreenChange)
+
+      player.hotkeys({
+        volumeStep: 0.1,
+        seekStep: 5,
+        enableModifiersForNumbers: false,
+        customKeys: {
+          rightAngle: {
+            key: (event) => {
+              return event.which === 190
+            },
+            handler: (player, options, evnet) => {
+              player.playbackRate(nextItem(this.playbackRates, player.playbackRate()))
+            }
+          },
+          leftAngle: {
+            key: (event) => {
+              return event.which === 188
+            },
+            handler: (player, options, evnet) => {
+              player.playbackRate(previousItem(this.playbackRates, player.playbackRate()))
+            }
+          }
+        }
+      })
 
       this.currentTime = player.currentTime()
       this.volume = player.volume()
