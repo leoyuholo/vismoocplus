@@ -50,6 +50,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route.fullPath)
     this.$store.dispatch('track', {
       eventName: 'course',
       dimensions: {
@@ -60,9 +61,10 @@ export default {
     })
 
     if (!this.user) {
-      this.$router.push({ path: '/' })
+      this.$router.push({ path: '/', query: { redirect_from: this.$route.fullPath } })
       return
     }
+
     this.$store.dispatch('getLectures')
       .then(lectures => {
         if (this.lectureId === 'index' && lectures.length > 0) {

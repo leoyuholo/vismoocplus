@@ -59,7 +59,7 @@ export default {
     })
 
     if (!this.user) {
-      this.$router.push({ path: '/' })
+      this.$router.push({ path: '/', query: { redirect_from: this.$route.fullPath } })
       return
     }
     this.$store.dispatch('getLectures', { courseId: this.$route.params.courseId })
