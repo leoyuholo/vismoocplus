@@ -2,6 +2,7 @@ import Parse from 'parse'
 
 import Lecture from './models/Lecture'
 import Event from './models/Event'
+import patch from '../patches'
 
 const parseConfig = process.env.parseConfig
 
@@ -9,6 +10,9 @@ export default {
   init ({ commit }) {
     Parse.initialize(parseConfig.appId)
     Parse.serverURL = parseConfig.serverURL
+
+    patch()
+
     commit('init', Parse.User.current())
   },
   createLecture ({ commit }, lecture) {
@@ -60,6 +64,9 @@ export default {
       .then(() => {
         commit('setUser', null)
       })
+  },
+  resend ({ commit }, { email }) {
+    return Parse.User.resendVerificationEmail(email)
   },
   track ({ commit }, { eventName, dimensions, options = {} }) {
     return Event.track(eventName, dimensions, options)

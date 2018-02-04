@@ -38,6 +38,9 @@ const router = new VueRouter({
       }, {
         path: 'signup',
         component: load('pages/Signup')
+      }, {
+        path: 'resend',
+        component: load('pages/Resend')
       }]
     },
     {

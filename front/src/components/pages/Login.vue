@@ -10,7 +10,9 @@
         <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
       </p>
       <message :errorMsg="errorMsg" />
+      <!-- <router-link class="pull-left" to="/user/resend">Verify Email</router-link> -->
       <router-link class="pull-right" to="/user/forgot">Forgot Password</router-link>
+      <br/>
     </q-card-main>
     <q-card-actions>
       <q-btn color="primary" class="full-width" @click="login">Login</q-btn>
