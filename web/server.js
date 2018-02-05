@@ -32,8 +32,9 @@ const dashboard = new ParseDashboard({
   users: [{
     user: config.get('parseDashboard.user'),
     pass: config.get('parseDashboard.pass')
-  }]
-}, { allowInsecureHTTP: process.env.NODE_ENV === 'development' })
+  }],
+  trustProxy: 1
+}, { allowInsecureHTTP: true })
 
 app.use('/api', parse)
 
