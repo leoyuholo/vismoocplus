@@ -58,7 +58,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('signup', { email: this.email, password: this.password })
+      this.$store.dispatch('signup', { email, password: this.password })
         .then(() => { this.successMsg = 'Sign Up success, please check email.' })
         .catch(error => { this.errorMsg = error.message })
     }
