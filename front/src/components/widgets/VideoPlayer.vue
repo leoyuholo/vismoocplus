@@ -78,7 +78,11 @@ export default {
       this.volume = this.options.volume || 0.5
       this.muted = this.options.muted || false
     },
-    heartbeat: debounce((emit) => { emit('heartbeat') }, 30000),
+    heartbeat: debounce(function () {
+      if (this.currentTime !== this.lastEventTime) {
+        this.emit('heartbeat')
+      }
+    }, 30000),
     emit (type, props) {
       const event = {
         type,
@@ -102,7 +106,8 @@ export default {
         })
       }
 
-      this.heartbeat(this.emit)
+      this.lastEventTime = this.currentTime
+      this.heartbeat()
 
       return this.$emit(type, event)
     },
@@ -184,6 +189,7 @@ export default {
     onSeeking (event) {
       const oldTime = this.previousTime
       const newTime = event.target.player.currentTime()
+      this.currentTime = event.target.player.currentTime()
 
       if (oldTime !== newTime) {
         this.emit('seek', {
