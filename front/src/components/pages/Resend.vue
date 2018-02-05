@@ -49,7 +49,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('resend', { email: this.email })
+      this.$store.dispatch('resend', { email })
         .then(() => { this.successMsg = 'Success, please check email.' })
         .catch(error => { this.errorMsg = error.message })
     }
