@@ -64,13 +64,14 @@ export default {
       return
     }
 
-    this.$store.dispatch('getUserSetting')
-      .then(() => this.$store.dispatch('getLectures'))
-      .then(lectures => {
-        if (this.lectureId === 'index' && lectures.length > 0) {
-          this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
-        }
-      })
+    Promise.all([
+      this.$store.dispatch('getUserSetting'),
+      this.$store.dispatch('getLectures')
+    ]).then(([userSetting, lectures]) => {
+      if (this.lectureId === 'index' && lectures.length > 0) {
+        this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
+      }
+    })
   }
 }
 </script>

@@ -78,7 +78,7 @@ export default {
       this.volume = this.options.volume || 0.5
       this.muted = this.options.muted || false
     },
-    heartbeat: debounce((emit) => { emit('heartbeat') }, 10000),
+    heartbeat: debounce((emit) => { emit('heartbeat') }, 30000),
     emit (type, props) {
       const event = {
         type,
@@ -204,31 +204,28 @@ export default {
       }
     },
     onVolumeChange (event) {
-      const newVolume = event.target.player.volume()
-      const muted = event.target.player.muted()
+      const oldVolume = this.volume
+      const oldMuted = this.muted
+      this.volume = event.target.player.volume()
+      this.muted = event.target.player.muted()
 
-      if (this.volume !== newVolume || this.muted !== muted) {
+      if (oldVolume !== this.volume || oldMuted !== this.muted) {
         this.emit('volumechange', {
-          oldVolume: this.volume,
-          newVolume,
-          muted
+          oldVolume,
+          newVolume: this.volume
         })
       }
-
-      this.volume = newVolume
-      this.muted = muted
     },
     onRateChange (event) {
-      const newRate = event.target.player.playbackRate()
+      const oldRate = this.playbackRate
+      this.playbackRate = event.target.player.playbackRate()
 
-      if (this.playbackRate !== newRate) {
+      if (oldRate !== this.playbackRate) {
         this.emit('ratechange', {
-          oldRate: this.playbackRate,
-          newRate
+          oldRate,
+          newRate: this.playbackRate
         })
       }
-
-      this.playbackRate = newRate
     },
     beforeunload () {
       this.emit('close')

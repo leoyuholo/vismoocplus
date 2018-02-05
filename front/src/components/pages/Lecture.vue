@@ -41,9 +41,9 @@ export default {
         poster: this.lecture.posterUrl,
         caption: this.lecture.captionUrl,
 
-        playbackRate: this.userSetting.get('playbackRate'),
-        volume: this.userSetting.get('volume'),
-        muted: this.userSetting.get('muted'),
+        playbackRate: this.userSetting.playbackRate,
+        volume: this.userSetting.volume,
+        muted: this.userSetting.muted,
 
         currentTime: this.$store.getters.lectureProgress(this.lectureId),
 

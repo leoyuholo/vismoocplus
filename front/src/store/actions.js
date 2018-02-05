@@ -31,7 +31,7 @@ export default {
       })
     }
 
-    return state.userSetting.save(changes)
+    return UserSetting.save(changes)
       .then(userSetting => commit('setUserSetting', userSetting))
   },
   track ({ commit }, { eventName, dimensions, options = {} }) {

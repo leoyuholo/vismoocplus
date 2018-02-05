@@ -11,6 +11,7 @@ class UserSetting extends Parse.Object {
     if (user.get('userSetting')) {
       return user.get('userSetting')
         .fetch()
+        .then(userSetting => userSetting.toJSON())
         .catch(errorHandler)
     }
 
@@ -20,8 +21,16 @@ class UserSetting extends Parse.Object {
       .then(userSetting => {
         user.set('userSetting', userSetting)
         return user.save()
-          .then(() => userSetting)
+          .then(() => userSetting.toJSON())
       })
+      .catch(errorHandler)
+  }
+
+  static save (changes) {
+    return Parse.User.current()
+      .get('userSetting')
+      .save(changes)
+      .then(userSetting => userSetting.toJSON())
       .catch(errorHandler)
   }
 }

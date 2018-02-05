@@ -19,6 +19,6 @@ export default {
     state.user = user
   },
   setUserSetting (state, userSetting) {
-    state.userSetting = userSetting
+    Object.assign(state.userSetting, userSetting)
   }
 }
