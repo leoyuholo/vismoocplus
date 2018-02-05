@@ -36,7 +36,7 @@ services:
       MONGODB_HOST: mongo
       MONGODB_PORT: 27017
       INIT_BACKUP: 'yes'
-      MAX_BACKUPS: 10
+      MAX_BACKUPS: 100
       CRON_TIME: 0 0 5 * *
     volumes:
       - ./volumes/mongobackup:/backup

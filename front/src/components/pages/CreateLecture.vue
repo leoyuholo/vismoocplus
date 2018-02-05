@@ -16,6 +16,9 @@
     <q-field>
       <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
+    <q-field>
+      <q-datetime v-model="lecture.releaseDate" float-label="Release Date" type="datetime" />
+    </q-field>
     <message :errorMsg="errorMsg" :successMsg="successMsg" />
     <q-btn color="primary" @click="submit">submit</q-btn>
   </div>
@@ -38,7 +41,8 @@ export default {
         description: '',
         videoUrl: '',
         posterUrl: '',
-        captionUrl: ''
+        captionUrl: '',
+        releaseDate: (new Date()).toISOString()
       },
       errorMsg: '',
       successMsg: ''
@@ -65,6 +69,10 @@ export default {
       const lecture = {
         ...this.lecture,
         courseId: this.courseId
+      }
+
+      if (this.lecture.releaseDate && this.lecture.releaseDate.toISOString) {
+        this.lecture.releaseDate = this.lecture.releaseDate.toISOString()
       }
 
       this.$store.dispatch('createLecture', lecture)

@@ -28,7 +28,8 @@ import Quasar, {
   QCardTitle,
   QCardSeparator,
   QCardMain,
-  QCardActions
+  QCardActions,
+  QDatetime
 } from 'quasar'
 // import Quasar, * as All from 'quasar'
 
@@ -54,7 +55,8 @@ Vue.use(Quasar, {
     QCardTitle,
     QCardSeparator,
     QCardMain,
-    QCardActions
+    QCardActions,
+    QDatetime
   }
 })
 // Vue.use(Quasar, {

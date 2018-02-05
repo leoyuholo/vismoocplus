@@ -37,7 +37,7 @@ export default {
     ...mapGetters(['courseId', 'lectureId', 'userAdmin']),
     ...mapState(['user']),
     lectures () {
-      return this.$store.state.lectures.map(l => ({
+      return this.$store.getters.lectures.map(l => ({
         ...l,
         url: `/course/${l.courseId}/lecture/${l.objectId}`
       })).concat(!this.userAdmin ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])

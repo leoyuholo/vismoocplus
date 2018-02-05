@@ -50,11 +50,19 @@ function previousItem (items, item) {
   }
 }
 
+function compareDate (da, db) {
+  const dateA = new Date(da)
+  const dateB = new Date(db)
+
+  return dateA.valueOf() - dateB.valueOf()
+}
+
 export {
   errorHandler,
   isValidHKUSTEmail,
   defaultEmailDomain,
   delayPromise,
   nextItem,
-  previousItem
+  previousItem,
+  compareDate
 }

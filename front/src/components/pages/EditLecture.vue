@@ -16,6 +16,9 @@
     <q-field>
       <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
+    <q-field>
+      <q-datetime v-model="lecture.releaseDate" float-label="Release Date" type="datetime" />
+    </q-field>
     <message :errorMsg="errorMsg" :successMsg="successMsg" />
     <q-btn color="primary" @click="save">Save</q-btn>
     <q-btn flat @click="$router.push(previewUrl)">Preview</q-btn>
@@ -57,6 +60,10 @@ export default {
       if (this.$v.$invalid) {
         this.errorMsg = 'Missing lecture attributes.'
         return
+      }
+
+      if (this.lecture.releaseDate && this.lecture.releaseDate.toISOString) {
+        this.lecture.releaseDate = this.lecture.releaseDate.toISOString()
       }
 
       this.$store.dispatch('updateLecture', { id: this.lectureId, changes: this.lecture })
