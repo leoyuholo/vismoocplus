@@ -7,6 +7,10 @@ class UserSetting extends Parse.Object {
   }
 
   static get () {
+    if (!Parse.User.current()) {
+      return Promise.reject(new Error("User hasn't logged in."))
+    }
+
     const user = Parse.User.current()
     if (user.get('userSetting')) {
       return user.get('userSetting')
@@ -27,6 +31,10 @@ class UserSetting extends Parse.Object {
   }
 
   static save (changes) {
+    if (!Parse.User.current()) {
+      return Promise.reject(new Error("User hasn't logged in."))
+    }
+
     return Parse.User.current()
       .get('userSetting')
       .save(changes)

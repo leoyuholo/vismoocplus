@@ -9,7 +9,8 @@ Vue.use(Vuex)
 
 const state = {
   lectures: [],
-  userSetting: {}
+  userSetting: {},
+  user: null
 }
 
 const store = new Vuex.Store({

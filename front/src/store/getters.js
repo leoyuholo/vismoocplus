@@ -5,6 +5,6 @@ export default {
   courseId: state => state.route.params.courseId,
   lectures: state => state.lectures.filter(l => !l.releaseDate || compareDate(l.releaseDate, Date.now()) <= 0),
   lecture: (state, getters) => state.lectures.find(l => l.objectId === getters.lectureId),
-  userAdmin: state => state.user.get('admin'),
+  userAdmin: state => state.user && state.user.get ? state.user.get('admin') : false,
   lectureProgress: state => lectureId => state.userSetting ? state.userSetting['progress_' + lectureId] || 0 : 0
 }

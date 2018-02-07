@@ -14,9 +14,7 @@
         @exitfullscreen="trackVideoAction($event)"
         @volumechange="trackAndSave($event)"
         @ratechange="trackAndSave($event)"
-        @quit="trackAndSave($event)"
         @switch="trackAndSave($event)"
-        @close="trackAndSave($event)"
         @heartbeat="trackVideoAction($event)"
       />
     </div>

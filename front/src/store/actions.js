@@ -27,7 +27,7 @@ export default {
 
     if (lectureProgress) {
       Object.entries(lectureProgress).forEach(([k, v]) => {
-        changes['progress_' + k] = v
+        changes['progress_' + k] = Math.floor(v)
       })
     }
 
