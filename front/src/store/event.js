@@ -24,4 +24,11 @@ class Event extends Parse.Object {
   }
 }
 
-export default Event
+export default {
+  namespaced: true,
+  actions: {
+    track ({ commit }, { eventName, dimensions, options = {} }) {
+      return Event.track(eventName, dimensions, options)
+    }
+  }
+}

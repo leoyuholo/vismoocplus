@@ -1,9 +1,11 @@
 <template>
   <div>
     <vue-video-player
+      v-if="playerOptions"
+      :options="playerOptions"
+
       class="video-player-box"
       ref="videoPlayer"
-      :options="playerOptions"
       :playsinline="true"
 
       @pause="onPlayerPause($event)"
@@ -21,17 +23,50 @@
 import { videoPlayer } from 'vue-video-player'
 import 'videojs-hotkeys'
 import { debounce } from 'lodash'
-import { nextItem, previousItem } from '../../helpers'
+import { nextItem, previousItem } from 'src/helpers'
 
 export default {
   name: 'video-player',
-  props: ['options'],
+  props: {
+    options: {
+      src: {
+        type: String,
+        required: true
+      },
+      poster: {
+        type: String,
+        default: ''
+      },
+      caption: {
+        type: String,
+        default: ''
+      },
+      currentTime: {
+        type: Number,
+        default: 0
+      },
+      playbackRate: {
+        type: Number,
+        default: 1
+      },
+      volume: {
+        type: Number,
+        default: 0.5
+      },
+      muted: {
+        type: Boolean,
+        default: false
+      },
+      metaInfo: {
+        type: Object
+      }
+    }
+  },
   components: {
     vueVideoPlayer: videoPlayer
   },
   data () {
     return {
-      fullscreen: false,
       playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
       events: [
         'ready',
@@ -44,39 +79,38 @@ export default {
         'exitfullscreen',
         'volumechange',
         'ratechange',
-        'quit',
         'switch',
         'close',
         'heartbeat'
-      ]
+      ],
+      playerOptions: null
     }
   },
-  computed: {
-    playerOptions () {
-      return {
+  methods: {
+    loadParamsFromOptions () {
+      if (this.heartbeat.cancel) {
+        this.heartbeat.cancel()
+      }
+      this.playerOptions = {
         // videojs options
         language: 'en',
         fluid: true,
+        autoplay: false,
         playbackRates: this.playbackRates,
 
         sources: [{
           type: 'video/mp4',
           src: this.options.src
         }],
-        poster: this.options.poster,
-
-        autoplay: this.options.autoplay || false,
-        muted: this.options.muted || false
+        poster: this.options.poster
       }
-    }
-  },
-  methods: {
-    loadParamsFromOptions () {
-      this.previousTime = this.options.currentTime || 0
-      this.currentTime = this.options.currentTime || 0
-      this.playbackRate = this.options.playbackRate || 1
-      this.volume = this.options.volume || 0.5
-      this.muted = this.options.muted || false
+      this.lastEventTime = this.options.currentTime
+      this.previousTime = this.options.currentTime
+      this.currentTime = this.options.currentTime
+      this.playbackRate = this.options.playbackRate
+      this.volume = this.options.volume
+      this.muted = this.options.muted
+      this.fullscreen = false
     },
     heartbeat: debounce(function () {
       if (this.currentTime !== this.lastEventTime) {
@@ -151,10 +185,10 @@ export default {
         }, false)
       }
 
-      player.volume(this.volume)
-      player.muted(this.muted)
-      player.currentTime(this.currentTime)
-      player.playbackRate(this.playbackRate)
+      player.volume(this.options.volume)
+      player.muted(this.options.muted)
+      player.currentTime(Math.floor(this.options.currentTime))
+      player.playbackRate(this.options.playbackRate)
 
       this.emit('ready')
     },
@@ -202,11 +236,15 @@ export default {
     onFullscreenChange (event) {
       if (event.target.player.isFullscreen()) {
         this.fullscreen = true
-        this.emit('enterfullscreen')
+        this.emit('enterfullscreen', {
+          fullscreen: this.fullscreen
+        })
       }
       else {
         this.fullscreen = false
-        this.emit('exitfullscreen')
+        this.emit('exitfullscreen', {
+          fullscreen: this.fullscreen
+        })
       }
     },
     onVolumeChange (event) {
@@ -241,8 +279,8 @@ export default {
     options (newOptions, oldOptions) {
       if (newOptions.src !== oldOptions.src) {
         this.emit('switch', oldOptions.metaInfo)
+        this.loadParamsFromOptions()
       }
-      this.loadParamsFromOptions()
     }
   },
   mounted () {
@@ -251,7 +289,9 @@ export default {
   },
   beforeDestroy () {
     window.removeEventListener('beforeunload', this.beforeunload)
-    this.emit('quit')
+    if (this.heartbeat.cancel) {
+      this.heartbeat.cancel()
+    }
   }
 }
 </script>

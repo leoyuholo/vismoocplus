@@ -15,6 +15,7 @@
         @volumechange="trackAndSave($event)"
         @ratechange="trackAndSave($event)"
         @switch="trackAndSave($event)"
+        @close="trackAndSave($event)"
         @heartbeat="trackVideoAction($event)"
       />
     </div>
@@ -22,15 +23,22 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import VideoPlayer from '../widgets/VideoPlayer'
+
+import VideoPlayer from '@/widgets/VideoPlayer'
 
 export default {
   components: {
     VideoPlayer
   },
   computed: {
-    ...mapGetters(['courseId', 'lectureId', 'lecture']),
-    ...mapState(['userSetting']),
+    ...mapGetters({
+      courseId: 'courseId',
+      lectureId: 'lectureId',
+      lecture: 'lecture/current'
+    }),
+    ...mapState({
+      userSetting: state => state.user.userSetting
+    }),
     videoOptions () {
       if (!this.lecture) { return {} }
 
@@ -43,7 +51,7 @@ export default {
         volume: this.userSetting.volume,
         muted: this.userSetting.muted,
 
-        currentTime: this.$store.getters.lectureProgress(this.lectureId),
+        currentTime: this.$store.getters['user/lectureProgress'](this.lectureId),
 
         metaInfo: {
           lectureId: this.lectureId,
@@ -63,7 +71,7 @@ export default {
         }
       }
 
-      return this.$store.dispatch('track', payload)
+      return this.$store.dispatch('event/track', payload)
     },
     saveUserSetting (event) {
       const changes = {
@@ -77,7 +85,7 @@ export default {
         [event.lectureId]: event.currentTime
       }
 
-      return this.$store.dispatch('saveUserSetting', { changes, lectureProgress })
+      return this.$store.dispatch('user/saveUserSetting', { changes, lectureProgress })
     },
     trackAndSave (event) {
       return Promise.all([

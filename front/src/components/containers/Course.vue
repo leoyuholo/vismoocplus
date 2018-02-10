@@ -11,9 +11,7 @@
         <div slot="subtitle">HKUST VisLab</div>
       </q-toolbar-title>
 
-      <q-btn flat @click="logout">
-        Log out
-      </q-btn>
+      <user-icon />
 
     </q-toolbar>
 
@@ -26,31 +24,31 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-import LectureList from '../widgets/LectureList'
+import { mapGetters } from 'vuex'
+
+import LectureList from '@/widgets/LectureList'
+import UserIcon from '@/widgets/UserIcon'
 
 export default {
   components: {
-    LectureList
+    LectureList,
+    UserIcon
   },
   computed: {
-    ...mapGetters(['courseId', 'lectureId', 'userAdmin']),
-    ...mapState(['user']),
+    ...mapGetters({
+      courseId: 'courseId',
+      lectureId: 'lectureId',
+      userAdmin: 'user/userAdmin'
+    }),
     lectures () {
-      return this.$store.getters.lectures.map(l => ({
+      return this.$store.getters['lecture/list'].map(l => ({
         ...l,
         url: `/course/${l.courseId}/lecture/${l.objectId}`
       })).concat(!this.userAdmin ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])
     }
   },
-  methods: {
-    logout () {
-      this.$store.dispatch('logout')
-        .then(() => this.$router.push({ path: '/' }))
-    }
-  },
   mounted () {
-    this.$store.dispatch('track', {
+    this.$store.dispatch('event/track', {
       eventName: 'course',
       dimensions: {
         path: this.$route.fullPath,
@@ -59,19 +57,12 @@ export default {
       }
     })
 
-    if (!this.user) {
-      this.$router.push({ path: '/', query: { redirect_from: this.$route.fullPath } })
-      return
-    }
-
-    Promise.all([
-      this.$store.dispatch('getUserSetting'),
-      this.$store.dispatch('getLectures')
-    ]).then(([userSetting, lectures]) => {
-      if (this.lectureId === 'index' && lectures.length > 0) {
-        this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
-      }
-    })
+    this.$store.dispatch('lecture/getLectures', { courseId: this.courseId })
+      .then(lectures => {
+        if (this.lectureId === 'index' && lectures.length > 0) {
+          this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
+        }
+      })
   }
 }
 </script>

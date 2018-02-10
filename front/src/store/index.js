@@ -1,24 +1,33 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Parse from 'parse'
 
-import actions from './actions'
-import getters from './getters'
-import mutations from './mutations'
+import user from './user'
+import lecture from './lecture'
+import event from './event'
 
 Vue.use(Vuex)
 
-const state = {
-  lectures: [],
-  userSetting: {},
-  user: null
-}
+const parseConfig = process.env.parseConfig
+Parse.initialize(parseConfig.appId)
+Parse.serverURL = parseConfig.serverURL
 
 const store = new Vuex.Store({
-  strict: true,
-  state,
-  getters,
-  actions,
-  mutations
+  strict: process.env.NODE_ENV === 'development',
+  modules: {
+    user,
+    lecture,
+    event
+  },
+  actions: {
+    init ({ dispatch }) {
+      dispatch('user/init')
+    }
+  },
+  getters: {
+    lectureId: state => state.route.params.lectureId,
+    courseId: state => state.route.params.courseId
+  }
 })
 
 export default store

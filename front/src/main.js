@@ -31,10 +31,6 @@ import Quasar, {
   QCardActions,
   QDatetime
 } from 'quasar'
-// import Quasar, * as All from 'quasar'
-
-import router from './router'
-import store from './store'
 
 Vue.config.productionTip = false
 Vue.use(Quasar, {
@@ -59,10 +55,6 @@ Vue.use(Quasar, {
     QDatetime
   }
 })
-// Vue.use(Quasar, {
-//   components: All,
-//   directives: All
-// })
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')
@@ -71,6 +63,9 @@ import 'quasar-extras/material-icons'
 // import 'quasar-extras/ionicons'
 // import 'quasar-extras/fontawesome'
 // import 'quasar-extras/animate'
+
+import router from './router'
+import store from './store'
 
 // router store sync
 import { sync } from 'vuex-router-sync'

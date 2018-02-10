@@ -27,8 +27,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
-import { delayPromise } from '../../helpers'
-import Message from '../widgets/Message'
+
+import { delayPromise } from 'src/helpers'
+import Message from '@/widgets/Message'
 
 export default {
   components: {
@@ -75,7 +76,7 @@ export default {
         this.lecture.releaseDate = this.lecture.releaseDate.toISOString()
       }
 
-      this.$store.dispatch('createLecture', lecture)
+      this.$store.dispatch('lecture/create', lecture)
         .then(lecture => {
           this.successMsg = `Lecture ${lecture.name} created. Redirecting...`
           delayPromise(2000)

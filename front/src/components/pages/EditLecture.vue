@@ -29,8 +29,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
-import { delayPromise } from '../../helpers'
-import Message from '../widgets/Message'
+
+import { delayPromise } from 'src/helpers'
+import Message from '@/widgets/Message'
 
 export default {
   components: {
@@ -46,7 +47,7 @@ export default {
   },
   data () {
     return {
-      lecture: Object.assign({}, this.$store.getters.lecture),
+      lecture: Object.assign({}, this.$store.getters['lecture/current']),
       errorMsg: '',
       successMsg: ''
     }
@@ -66,13 +67,13 @@ export default {
         this.lecture.releaseDate = this.lecture.releaseDate.toISOString()
       }
 
-      this.$store.dispatch('updateLecture', { id: this.lectureId, changes: this.lecture })
+      this.$store.dispatch('lecture/update', { lectureId: this.lectureId, changes: this.lecture })
         .then(() => { this.successMsg = `Lecture ${this.lecture.name} updated.` })
         .then(() => delayPromise(2000))
         .then(() => { this.successMsg = '' })
     },
     remove () {
-      this.$store.dispatch('deleteLecture', { id: this.lectureId })
+      this.$store.dispatch('lecture/delete', { lectureId: this.lectureId })
         .then(() => { this.successMsg = `Lecture ${this.lecture.name} deleted. Redirecting...` })
         .then(() => delayPromise(2000))
         .then(() => this.$router.push({ path: `/studio/${this.courseId}/new` }))
@@ -80,7 +81,7 @@ export default {
   },
   mounted () {
     this.$store.watch(
-      (store, getters) => { return getters.lecture },
+      (store, getters) => { return getters['lecture/current'] },
       lecture => { this.lecture = Object.assign({}, lecture) }
     )
   }

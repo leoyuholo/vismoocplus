@@ -11,9 +11,7 @@
         <div slot="subtitle">HKUST VisLab</div>
       </q-toolbar-title>
 
-      <q-btn flat @click="logout">
-        Log out
-      </q-btn>
+      <user-icon />
 
     </q-toolbar>
 
@@ -26,31 +24,27 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-import LectureList from '../widgets/LectureList'
+import { mapGetters } from 'vuex'
+
+import LectureList from '@/widgets/LectureList'
+import UserIcon from '@/widgets/UserIcon'
 
 export default {
   components: {
-    LectureList
+    LectureList,
+    UserIcon
   },
   computed: {
     ...mapGetters(['courseId']),
-    ...mapState(['user']),
     lectures () {
-      return this.$store.state.lectures.map(l => ({
+      return this.$store.state.lecture.lectures.map(l => ({
         ...l,
         url: `/studio/${l.courseId}/lecture/${l.objectId}/edit`
       })).concat([{id: 'new', name: 'Create New Lecture', url: `/studio/${this.courseId}/new`}])
     }
   },
-  methods: {
-    logout () {
-      this.$store.dispatch('logout')
-        .then(() => this.$router.push({ path: '/' }))
-    }
-  },
   mounted () {
-    this.$store.dispatch('track', {
+    this.$store.dispatch('event/track', {
       eventName: 'studio',
       dimensions: {
         path: this.$route.fullPath,
@@ -58,11 +52,7 @@ export default {
       }
     })
 
-    if (!this.user) {
-      this.$router.push({ path: '/', query: { redirect_from: this.$route.fullPath } })
-      return
-    }
-    this.$store.dispatch('getLectures', { courseId: this.$route.params.courseId })
+    this.$store.dispatch('lecture/getLectures', { courseId: this.courseId })
   }
 }
 </script>

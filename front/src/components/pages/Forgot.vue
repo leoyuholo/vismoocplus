@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import Message from '../widgets/Message'
-import { isValidHKUSTEmail, defaultEmailDomain } from '../../helpers'
+import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
+import Message from '@/widgets/Message'
 
 export default {
   components: {
@@ -49,7 +49,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('forgot', { email })
+      this.$store.dispatch('user/forgot', { email })
         .then(() => { this.successMsg = 'Success, please check email.' })
         .catch(error => { this.errorMsg = error.message })
     }

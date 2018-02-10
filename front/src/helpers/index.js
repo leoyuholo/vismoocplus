@@ -4,22 +4,15 @@ function errorHandler (error) {
 }
 
 function isValidHKUSTEmail (email) {
-  return (/@connect.ust.hk$/.test(email) || /@ust.hk$/.test(email) || /@cse.ust.hk$/.test(email))
+  return /@connect.ust.hk$/.test(email) || /@ust.hk$/.test(email) || /@cse.ust.hk$/.test(email)
 }
 
 function defaultEmailDomain (email) {
-  if (email && email.indexOf('@') === -1) {
-    return `${email}@connect.ust.hk`
-  }
-  else {
-    return email
-  }
+  return email && email.indexOf('@') === -1 ? `${email}@connect.ust.hk` : email
 }
 
 function delayPromise (ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, ms)
-  })
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 function nextItem (items, item) {
@@ -27,13 +20,7 @@ function nextItem (items, item) {
   if (index === -1) {
     return item
   }
-  const newIndex = index + 1
-  if (newIndex >= items.length) {
-    return items[items.length - 1]
-  }
-  else {
-    return items[newIndex]
-  }
+  return index === (items.length - 1) ? items[index] : items[index + 1]
 }
 
 function previousItem (items, item) {
@@ -41,20 +28,11 @@ function previousItem (items, item) {
   if (index === -1) {
     return item
   }
-  const newIndex = index - 1
-  if (newIndex < 0) {
-    return items[0]
-  }
-  else {
-    return items[newIndex]
-  }
+  return index === 0 ? items[index] : items[index - 1]
 }
 
 function compareDate (da, db) {
-  const dateA = new Date(da)
-  const dateB = new Date(db)
-
-  return dateA.valueOf() - dateB.valueOf()
+  return (new Date(da)).valueOf() - (new Date(db)).valueOf()
 }
 
 export {

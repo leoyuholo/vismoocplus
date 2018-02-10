@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import Message from '../widgets/Message'
-import { isValidHKUSTEmail, defaultEmailDomain } from '../../helpers'
+import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
+import Message from '@/widgets/Message'
 
 export default {
   components: {
@@ -58,7 +58,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('signup', { email, password: this.password })
+      this.$store.dispatch('user/signup', { email, password: this.password })
         .then(() => { this.successMsg = 'Sign Up success, please check email.' })
         .catch(error => { this.errorMsg = error.message })
     }
