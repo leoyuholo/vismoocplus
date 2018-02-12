@@ -31,16 +31,16 @@ const router = new VueRouter({
       component: load('containers/User'),
       children: [{
         path: 'login',
-        component: load('pages/Login')
+        component: load('pages/User/Login')
       }, {
         path: 'forgot',
-        component: load('pages/Forgot')
+        component: load('pages/User/Forgot')
       }, {
         path: 'signup',
-        component: load('pages/Signup')
+        component: load('pages/User/Signup')
       }, {
         path: 'resend',
-        component: load('pages/Resend')
+        component: load('pages/User/Resend')
       }]
     },
     {
@@ -48,7 +48,7 @@ const router = new VueRouter({
       component: load('containers/Course'),
       children: [{
         path: 'lecture/:lectureId',
-        component: load('pages/Lecture')
+        component: load('pages/Lecture/Lecture')
       }]
     },
     {
@@ -60,11 +60,11 @@ const router = new VueRouter({
       },
       {
         path: 'lecture/:lectureId/edit',
-        component: load('pages/EditLecture')
+        component: load('pages/Lecture/EditLecture')
       },
       {
         path: 'new',
-        component: load('pages/CreateLecture')
+        component: load('pages/Lecture/CreateLecture')
       }]
     },
 
