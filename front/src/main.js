@@ -83,7 +83,6 @@ Vue.use(Vuelidate)
 
 // page view analysis
 import VueAnalytics from 'vue-analytics'
-console.log(process.env.analytics)
 if (process.env.analytics) {
   Vue.use(VueAnalytics, {
     id: process.env.analytics.id,
