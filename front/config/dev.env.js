@@ -10,7 +10,7 @@ module.exports = merge(prodEnv, {
   analytics: {
     id: '"UA-888888888-1"',
     debug: {
-      enabled: true,
+      enabled: false,
       trace: true,
       sendHitTask: false
     }
