@@ -81,6 +81,20 @@ Vue.use(VueVideoPlayer)
 import Vuelidate from 'vuelidate'
 Vue.use(Vuelidate)
 
+// page view analysis
+import VueAnalytics from 'vue-analytics'
+console.log(process.env.analytics)
+if (process.env.analytics) {
+  Vue.use(VueAnalytics, {
+    id: process.env.analytics.id,
+    debug: process.env.analytics.debug,
+    autoTracking: {
+      exception: true
+    },
+    router
+  })
+}
+
 Quasar.start(() => {
   /* eslint-disable no-new */
   new Vue({
