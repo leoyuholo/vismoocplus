@@ -83,10 +83,11 @@ Vue.use(Vuelidate)
 
 // page view analysis
 import VueAnalytics from 'vue-analytics'
-if (process.env.analytics && (!process.env.analytics.debug || process.env.analytics.debug.enabled)) {
+const analytics = process.env.analytics
+if (analytics && (!analytics.debug || analytics.debug.enabled)) {
   Vue.use(VueAnalytics, {
-    id: process.env.analytics.id,
-    debug: process.env.analytics.debug,
+    id: analytics.id,
+    debug: analytics.debug || {},
     autoTracking: {
       exception: true
     },
