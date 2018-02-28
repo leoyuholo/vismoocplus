@@ -11,7 +11,7 @@
         <div slot="subtitle">HKUST VisLab</div>
       </q-toolbar-title>
 
-      <user-icon />
+      <user-icon permission="Studio"/>
 
     </q-toolbar>
 

@@ -133,7 +133,8 @@ export default {
     }
   },
   getters: {
-    userAdmin: state => state.currentUser ? state.currentUser.admin : false,
+    allowStudio: state => state.currentUser ? state.currentUser.allowStudio : false,
+    allowAnalytics: state => state.currentUser ? state.currentUser.allowAnalytics : false,
     lectureProgress: state => lectureId => state.userSetting ? state.userSetting['progress_' + lectureId] || 0 : 0
   }
 }

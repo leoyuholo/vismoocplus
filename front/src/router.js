@@ -67,6 +67,15 @@ const router = new VueRouter({
         component: load('pages/Lecture/CreateLecture')
       }]
     },
+    {
+      path: '/analytics/:courseId',
+      meta: { title: 'Analytics' },
+      component: load('containers/Analytics'),
+      children: [{
+        path: '',
+        component: load('pages/Analytics/index')
+      }]
+    },
 
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found

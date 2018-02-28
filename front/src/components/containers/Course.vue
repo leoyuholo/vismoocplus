@@ -38,13 +38,16 @@ export default {
     ...mapGetters({
       courseId: 'courseId',
       lectureId: 'lectureId',
-      userAdmin: 'user/userAdmin'
+      allowStudio: 'user/allowStudio',
+      allowAnalytics: 'user/allowAnalytics'
     }),
     lectures () {
       return this.$store.getters['lecture/list'].map(l => ({
         ...l,
         url: `/course/${l.courseId}/lecture/${l.objectId}`
-      })).concat(!this.userAdmin ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])
+      }))
+        .concat(!this.allowStudio ? [] : [{id: 'studio', name: 'Go to studio', url: `/studio/${this.courseId}/new`}])
+        .concat(!this.allowAnalytics ? [] : [{id: 'analytics', name: 'Go to analytics', url: `/analytics/${this.courseId}`}])
     }
   },
   mounted () {
