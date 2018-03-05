@@ -1,34 +1,35 @@
 <template>
   <div>
-    <vue-video-player
-      v-if="playerOptions"
+    <d-player
       :options="playerOptions"
+      :settings="settings"
 
-      class="video-player-box"
-      ref="videoPlayer"
-      :playsinline="true"
+      @pause="onpause($event)"
+      @ended="onended($event)"
+      @waiting="onwaiting($event)"
+      @playing="onplaying($event)"
+      @timeupdate="ontimeupdate($event)"
+      @seeking="onseeking($event)"
+      @volumechange="onvolumechange($event)"
+      @ratechange="onratechange($event)"
 
-      @pause="onPlayerPause($event)"
-      @ended="onPlayerEnded($event)"
-      @waiting="onPlayerWaiting($event)"
-      @playing="onPlayerPlaying($event)"
-      @timeupdate="onPlayerTimeupdate($event)"
+      @fullscreen="onfullscreen($event)"
+      @fullscreen_cancel="onfullscreencancel($event)"
 
-      @ready="playerReadied">
-    </vue-video-player>
+      @ready="onready($event)"
+      >
+    </d-player>
   </div>
 </template>
 
 <script>
-import { videoPlayer } from 'vue-video-player'
-import 'videojs-hotkeys'
 import { debounce } from 'lodash'
-import { nextItem, previousItem } from 'src/helpers'
+import VueDPlayer from '@/widgets/DPlayer'
 
 export default {
   name: 'video-player',
   props: {
-    options: {
+    video: {
       src: {
         type: String,
         required: true
@@ -40,7 +41,9 @@ export default {
       caption: {
         type: String,
         default: ''
-      },
+      }
+    },
+    settings: {
       currentTime: {
         type: Number,
         default: 0
@@ -55,66 +58,50 @@ export default {
       },
       muted: {
         type: Boolean,
-        default: false
-      },
+        default: true
+      }
+    },
+    options: {
       metaInfo: {
         type: Object
       }
     }
   },
   components: {
-    vueVideoPlayer: videoPlayer
+    'd-player': VueDPlayer
   },
-  data () {
-    return {
-      playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
-      events: [
-        'ready',
-        'waited',
-        'play',
-        'pause',
-        'end',
-        'seek',
-        'enterfullscreen',
-        'exitfullscreen',
-        'volumechange',
-        'ratechange',
-        'switch',
-        'close',
-        'heartbeat'
-      ],
-      playerOptions: null
+  computed: {
+    playerOptions () {
+      return {
+        video: {
+          url: this.video.src,
+          pic: this.video.poster
+        },
+        subtitle: {
+          url: this.video.caption,
+          fontSize: '1.5vw',
+          bottom: '10%'
+        }
+      }
     }
   },
   methods: {
-    loadParamsFromOptions () {
+    init () {
       if (this.heartbeat.cancel) {
         this.heartbeat.cancel()
       }
-      this.playerOptions = {
-        // videojs options
-        language: 'en',
-        fluid: true,
-        autoplay: false,
-        playbackRates: this.playbackRates,
-
-        sources: [{
-          type: 'video/mp4',
-          src: this.options.src
-        }],
-        poster: this.options.poster
-      }
-      this.lastEventTime = this.options.currentTime
-      this.previousTime = this.options.currentTime
-      this.currentTime = this.options.currentTime
-      this.playbackRate = this.options.playbackRate
-      this.volume = this.options.volume
-      this.muted = this.options.muted
+      this.lastEventTime = this.previousTime = this.currentTime = this.settings.currentTime
+      this.playbackRate = this.settings.playbackRate
+      this.volume = this.settings.volume
+      this.muted = this.settings.muted
       this.fullscreen = false
     },
     heartbeat: debounce(function () {
       if (this.currentTime !== this.lastEventTime) {
-        this.emit('heartbeat')
+        this.emit('heartbeat', {
+          lastEventTime: this.lastEventTime,
+          currentTime: this.currentTime
+        })
       }
     }, 30000),
     emit (type, props) {
@@ -143,61 +130,34 @@ export default {
       this.lastEventTime = this.currentTime
       this.heartbeat()
 
+      console.debug(type, event)
+
       return this.$emit(type, event)
     },
-    playerReadied (player) {
-      player.on('seeking', this.onSeeking)
-      player.on('volumechange', this.onVolumeChange)
-      player.on('ratechange', this.onRateChange)
-      player.on('fullscreenchange', this.onFullscreenChange)
-
-      player.hotkeys({
-        volumeStep: 0.1,
-        seekStep: 5,
-        enableModifiersForNumbers: false,
-        enableVolumeScroll: false,
-        customKeys: {
-          rightAngle: {
-            key: (event) => {
-              return event.which === 190
-            },
-            handler: (player, options, evnet) => {
-              player.playbackRate(nextItem(this.playbackRates, player.playbackRate()))
-            }
-          },
-          leftAngle: {
-            key: (event) => {
-              return event.which === 188
-            },
-            handler: (player, options, evnet) => {
-              player.playbackRate(previousItem(this.playbackRates, player.playbackRate()))
-            }
-          }
-        }
-      })
-
-      if (this.options.caption) {
-        player.addRemoteTextTrack({
-          kind: 'captions',
-          label: 'English',
-          srclang: 'en',
-          src: this.options.caption
-        }, false)
-      }
-
-      player.volume(this.options.volume)
-      player.muted(this.options.muted)
-      player.currentTime(Math.floor(this.options.currentTime))
-      player.playbackRate(this.options.playbackRate)
-
-      this.emit('ready')
-    },
-    onPlayerWaiting (player) {
+    onwaiting (player) {
       this.waitSince = Date.now()
     },
-    onPlayerTimeupdate (player) {
+    onplaying (player) {
       this.previousTime = this.currentTime
-      this.currentTime = player.currentTime()
+      this.currentTime = player.video.currentTime
+
+      this.emit('play')
+    },
+    onpause (player) {
+      this.previousTime = this.currentTime
+      this.currentTime = player.video.currentTime
+
+      this.emit('pause')
+    },
+    onended (player) {
+      this.previousTime = this.currentTime
+      this.currentTime = player.video.currentTime
+
+      this.emit('end')
+    },
+    ontimeupdate (player) {
+      this.previousTime = this.currentTime
+      this.currentTime = player.video.currentTime
 
       if (this.waitSince) {
         const waitEnd = Date.now()
@@ -211,19 +171,10 @@ export default {
         this.waitSince = undefined
       }
     },
-    onPlayerPlaying (player) {
-      this.emit('play')
-    },
-    onPlayerPause (player) {
-      this.emit('pause')
-    },
-    onPlayerEnded (player) {
-      this.emit('end')
-    },
-    onSeeking (event) {
+    onseeking (player) {
       const oldTime = this.previousTime
-      const newTime = event.target.player.currentTime()
-      this.currentTime = event.target.player.currentTime()
+      const newTime = player.video.currentTime
+      this.currentTime = player.video.currentTime
 
       if (oldTime !== newTime) {
         this.emit('seek', {
@@ -233,36 +184,24 @@ export default {
         })
       }
     },
-    onFullscreenChange (event) {
-      if (event.target.player.isFullscreen()) {
-        this.fullscreen = true
-        this.emit('enterfullscreen', {
-          fullscreen: this.fullscreen
-        })
-      }
-      else {
-        this.fullscreen = false
-        this.emit('exitfullscreen', {
-          fullscreen: this.fullscreen
-        })
-      }
-    },
-    onVolumeChange (event) {
+    onvolumechange (player) {
       const oldVolume = this.volume
       const oldMuted = this.muted
-      this.volume = event.target.player.volume()
-      this.muted = event.target.player.muted()
+      this.volume = +player.video.volume.toFixed(2)
+      this.muted = player.video.muted
 
       if (oldVolume !== this.volume || oldMuted !== this.muted) {
         this.emit('volumechange', {
           oldVolume,
-          newVolume: this.volume
+          newVolume: this.volume,
+          oldMuted,
+          newMuted: this.muted
         })
       }
     },
-    onRateChange (event) {
+    onratechange (player) {
       const oldRate = this.playbackRate
-      this.playbackRate = event.target.player.playbackRate()
+      this.playbackRate = player.video.playbackRate
 
       if (oldRate !== this.playbackRate) {
         this.emit('ratechange', {
@@ -271,21 +210,36 @@ export default {
         })
       }
     },
+    onfullscreen (player) {
+      this.fullscreen = true
+      this.emit('enterfullscreen', {
+        fullscreen: this.fullscreen
+      })
+    },
+    onfullscreencancel (player) {
+      this.fullscreen = false
+      this.emit('exitfullscreen', {
+        fullscreen: this.fullscreen
+      })
+    },
+    onready (player) {
+      this.emit('ready')
+    },
     beforeunload () {
       this.emit('close')
     }
   },
   watch: {
     options (newOptions, oldOptions) {
-      if (newOptions.src !== oldOptions.src) {
+      if (newOptions.metaInfo !== oldOptions.metaInfo) {
         this.emit('switch', oldOptions.metaInfo)
-        this.loadParamsFromOptions()
+        this.init()
       }
     }
   },
   mounted () {
     window.addEventListener('beforeunload', this.beforeunload)
-    this.loadParamsFromOptions()
+    this.init()
   },
   beforeDestroy () {
     window.removeEventListener('beforeunload', this.beforeunload)

@@ -2,7 +2,9 @@
     <div class="layout-padding lecture">
       <video-player
         v-if="lecture"
-        :options="videoOptions"
+        :video="video"
+        :settings="videoPlayerSettings"
+        :options="videoPlayerOptions"
 
         @ready="trackVideoAction($event)"
         @waited="trackVideoAction($event)"
@@ -30,6 +32,10 @@ export default {
   components: {
     VideoPlayer
   },
+  data () {
+    return {
+    }
+  },
   computed: {
     ...mapGetters({
       courseId: 'courseId',
@@ -39,20 +45,26 @@ export default {
     ...mapState({
       userSetting: state => state.user.userSetting
     }),
-    videoOptions () {
-      if (!this.lecture) { return {} }
-
+    video () {
       return {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
-        caption: this.lecture.captionUrl,
+        caption: this.lecture.captionUrl
+      }
+    },
+    videoPlayerSettings () {
+      const { playbackRate, volume, muted } = this.userSetting || {}
+      const currentTime = this.$store.getters['user/lectureProgress'](this.lectureId)
 
-        playbackRate: this.userSetting.playbackRate,
-        volume: this.userSetting.volume,
-        muted: this.userSetting.muted,
-
-        currentTime: this.$store.getters['user/lectureProgress'](this.lectureId),
-
+      return {
+        playbackRate,
+        volume,
+        muted,
+        currentTime
+      }
+    },
+    videoPlayerOptions () {
+      return {
         metaInfo: {
           lectureId: this.lectureId,
           courseId: this.courseId

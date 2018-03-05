@@ -47,6 +47,9 @@ module.exports = {
     proxyTable: {
       "/api": {
         target: "http://web:1337"
+      },
+      "/video": {
+        target: "http://nginx:3000"
       }
     }
   }

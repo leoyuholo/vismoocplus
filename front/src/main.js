@@ -71,12 +71,6 @@ import store from './store'
 import { sync } from 'vuex-router-sync'
 sync(store, router)
 
-// video.js
-import VueVideoPlayer from 'vue-video-player'
-import 'video.js/dist/video-js.css'
-import 'assets/styles/videojs-yt.css'
-Vue.use(VueVideoPlayer)
-
 // form validation
 import Vuelidate from 'vuelidate'
 Vue.use(Vuelidate)

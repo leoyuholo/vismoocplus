@@ -20,8 +20,8 @@ services:
     environment:
       NODE_ENV: development
       # VERBOSE: 1
-    # command: sleep infinity
-    command: npm run dev
+    command: sleep infinity
+    # command: npm run dev
   front:
     image: node:8
     ports:
@@ -33,3 +33,23 @@ services:
       NODE_ENV: development
     command: sleep infinity
     # command: npm run dev
+  nginx:
+    image: nginx:1
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./video:/usr/share/nginx/video
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+    logging:
+      driver: none
+  # mongobackup:
+  #   image: requilence/mongodb-backup
+  #   environment:
+  #     MONGODB_HOST: mongo
+  #     MONGODB_PORT: 27017
+  #     INIT_BACKUP: 'yes'
+  #     MAX_BACKUPS: 100
+  #     CRON_TIME: 0 5 * * *
+  #   volumes:
+  #     - ./volumes/mongobackup:/backup
