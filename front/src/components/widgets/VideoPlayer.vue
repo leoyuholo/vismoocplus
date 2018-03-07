@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
+import { debounce, capitalize } from 'lodash'
 import VueDPlayer from '@/widgets/DPlayer'
 
 export default {
@@ -41,6 +41,11 @@ export default {
       caption: {
         type: String,
         default: ''
+      },
+      tracking: {
+        dimensions: {
+          type: Object
+        }
       }
     },
     settings: {
@@ -59,11 +64,6 @@ export default {
       muted: {
         type: Boolean,
         default: true
-      }
-    },
-    options: {
-      metaInfo: {
-        type: Object
       }
     }
   },
@@ -116,8 +116,8 @@ export default {
         waitSince: this.waitSince
       }
 
-      if (this.options.metaInfo) {
-        Object.entries(this.options.metaInfo).forEach(([k, v]) => {
+      if (this.video.tracking.dimensions) {
+        Object.entries(this.video.tracking.dimensions).forEach(([k, v]) => {
           event[k] = v
         })
       }
@@ -231,9 +231,19 @@ export default {
     }
   },
   watch: {
-    options (newOptions, oldOptions) {
-      if (newOptions.metaInfo !== oldOptions.metaInfo) {
-        this.emit('switch', oldOptions.metaInfo)
+    video (newVideo, oldVideo) {
+      if (newVideo.src !== oldVideo.src) {
+        const event = {}
+
+        Object.entries(oldVideo.tracking.dimensions).forEach(([k, v]) => {
+          event['old' + capitalize(k)] = v
+        })
+
+        Object.entries(newVideo.tracking.dimensions).forEach(([k, v]) => {
+          event['new' + capitalize(k)] = v
+        })
+
+        this.emit('switch', event)
         this.init()
       }
     }

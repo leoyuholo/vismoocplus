@@ -4,7 +4,6 @@
         v-if="lecture && userSetting"
         :video="video"
         :settings="videoPlayerSettings"
-        :options="videoPlayerOptions"
 
         @ready="trackVideoAction($event)"
         @waited="trackVideoAction($event)"
@@ -49,7 +48,13 @@ export default {
       return {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
-        caption: this.lecture.captionUrl
+        caption: this.lecture.captionUrl,
+        tracking: {
+          dimensions: {
+            lectureId: this.lectureId,
+            courseId: this.courseId
+          }
+        }
       }
     },
     videoPlayerSettings () {
@@ -61,14 +66,6 @@ export default {
         volume,
         muted,
         currentTime
-      }
-    },
-    videoPlayerOptions () {
-      return {
-        metaInfo: {
-          lectureId: this.lectureId,
-          courseId: this.courseId
-        }
       }
     }
   },
