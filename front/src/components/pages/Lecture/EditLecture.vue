@@ -16,6 +16,21 @@
     <q-field>
       <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
+    <div v-if="lecture.videoUrl">
+      <video-player
+        ref="player"
+        :video="video"
+
+        @canplay="videoReady"
+        >
+      </video-player>
+    </div>
+    <q-field>
+      <q-input v-model="videoDuration" float-label="Detected Video Duration (s)" disable />
+    </q-field>
+    <q-field>
+      <q-input v-model="lecture.videoDuration" float-label="Video Duration (s)" type="number" :after="[{icon: 'autorenew', handler: updateDuration}]" />
+    </q-field>
     <q-field>
       <q-datetime v-model="lecture.releaseDate" float-label="Release Date" type="datetime" />
     </q-field>
@@ -30,33 +45,53 @@
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
 
+import VideoPlayer from '@/widgets/VideoPlayer'
 import { delayPromise } from 'src/helpers'
 import Message from '@/widgets/Message'
 
 export default {
   components: {
-    Message
+    Message,
+    VideoPlayer
   },
   validations: {
     lecture: {
       name: { required },
       description: { required },
       videoUrl: { required },
-      posterUrl: { required }
+      posterUrl: { required },
+      videoDuration: { required }
     }
   },
   data () {
+    const defaultLecture = { videoDuration: 0 }
     return {
-      lecture: Object.assign({}, this.$store.getters['lecture/current']),
+      defaultLecture,
+      lecture: Object.assign({}, defaultLecture, this.$store.getters['lecture/current']),
+      videoDuration: 'N/A',
       errorMsg: '',
       successMsg: ''
     }
   },
   computed: {
     ...mapGetters(['courseId', 'lectureId']),
-    previewUrl () { return `/course/${this.courseId}/lecture/${this.lectureId}` }
+    previewUrl () { return `/course/${this.courseId}/lecture/${this.lectureId}` },
+    video () {
+      return {
+        src: this.lecture.videoUrl,
+        poster: this.lecture.posterUrl,
+        caption: this.lecture.captionUrl
+      }
+    }
   },
   methods: {
+    videoReady () {
+      this.videoDuration = this.$refs.player.duration()
+    },
+    updateDuration () {
+      this.videoReady()
+      this.lecture.videoDuration = this.videoDuration
+    },
     save () {
       if (this.$v.$invalid) {
         this.errorMsg = 'Missing lecture attributes.'
@@ -82,7 +117,7 @@ export default {
   mounted () {
     this.$store.watch(
       (store, getters) => { return getters['lecture/current'] },
-      lecture => { this.lecture = Object.assign({}, lecture) }
+      lecture => { this.lecture = Object.assign({}, this.defaultLecture, lecture) }
     )
   }
 }

@@ -1,9 +1,11 @@
 <template>
   <div>
     <d-player
-      :options="playerOptions"
+      ref="player"
+      :options="dPlayerOptions"
       :settings="settings"
 
+      @canplay="oncanplay($event)"
       @pause="onpause($event)"
       @ended="onended($event)"
       @waiting="onwaiting($event)"
@@ -23,48 +25,19 @@
 </template>
 
 <script>
-import { debounce, capitalize } from 'lodash'
+import { debounce, capitalize, defaults } from 'lodash'
 import VueDPlayer from '@/widgets/DPlayer'
 
 export default {
   name: 'video-player',
   props: {
     video: {
-      src: {
-        type: String,
-        required: true
-      },
-      poster: {
-        type: String,
-        default: ''
-      },
-      caption: {
-        type: String,
-        default: ''
-      },
-      tracking: {
-        dimensions: {
-          type: Object
-        }
-      }
+      type: Object,
+      default () { return {} }
     },
     settings: {
-      currentTime: {
-        type: Number,
-        default: 0
-      },
-      playbackRate: {
-        type: Number,
-        default: 1
-      },
-      volume: {
-        type: Number,
-        default: 0.5
-      },
-      muted: {
-        type: Boolean,
-        default: true
-      }
+      type: Object,
+      default () { return {} }
     }
   },
   components: {
@@ -72,28 +45,52 @@ export default {
   },
   computed: {
     playerOptions () {
+      const playerOptions = defaults({}, this.video, {
+        src: '',
+        poster: '',
+        caption: '',
+        tracking: {}
+      })
+
+      return playerOptions
+    },
+    dPlayerOptions () {
       return {
         video: {
-          url: this.video.src,
-          pic: this.video.poster
+          url: this.playerOptions.src,
+          pic: this.playerOptions.poster
         },
         subtitle: {
-          url: this.video.caption,
+          url: this.playerOptions.caption,
           fontSize: '1.5vw',
           bottom: '10%'
         }
       }
+    },
+    playerSettings () {
+      const settings = defaults({}, this.settings, {
+        currentTime: 0,
+        playbackRate: 1,
+        volume: 0.5,
+        meted: false
+      })
+
+      return settings
     }
   },
   methods: {
+    duration () {
+      return this.$refs.player.dp.video.duration
+    },
     init () {
       if (this.heartbeat.cancel) {
         this.heartbeat.cancel()
       }
-      this.lastEventTime = this.previousTime = this.currentTime = this.settings.currentTime
-      this.playbackRate = this.settings.playbackRate
-      this.volume = this.settings.volume
-      this.muted = this.settings.muted
+
+      this.lastEventTime = this.previousTime = this.currentTime = this.playerSettings.currentTime
+      this.playbackRate = this.playerSettings.playbackRate
+      this.volume = this.playerSettings.volume
+      this.muted = this.playerSettings.muted
       this.fullscreen = false
       this.waitSince = undefined
     },
@@ -116,7 +113,7 @@ export default {
         waitSince: this.waitSince
       }
 
-      if (this.video.tracking.dimensions) {
+      if (this.playerOptions.tracking && this.playerOptions.tracking.dimensions) {
         Object.entries(this.video.tracking.dimensions).forEach(([k, v]) => {
           event[k] = v
         })
@@ -134,6 +131,9 @@ export default {
       console.debug(type, event)
 
       return this.$emit(type, event)
+    },
+    oncanplay (player) {
+      this.emit('canplay')
     },
     onwaiting (player) {
       this.waitSince = Date.now()
@@ -232,20 +232,22 @@ export default {
   },
   watch: {
     video (newVideo, oldVideo) {
-      if (newVideo.src !== oldVideo.src) {
-        const event = {}
+      const event = {}
 
+      if (oldVideo.tracking && oldVideo.tracking.dimensions) {
         Object.entries(oldVideo.tracking.dimensions).forEach(([k, v]) => {
           event['old' + capitalize(k)] = v
         })
+      }
 
+      if (newVideo.tracking && newVideo.tracking.dimensions) {
         Object.entries(newVideo.tracking.dimensions).forEach(([k, v]) => {
           event['new' + capitalize(k)] = v
         })
-
-        this.emit('switch', event)
-        this.init()
       }
+
+      this.emit('switch', event)
+      this.init()
     }
   },
   mounted () {

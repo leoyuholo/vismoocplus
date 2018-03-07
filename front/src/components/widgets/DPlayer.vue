@@ -17,8 +17,7 @@ export default {
   },
   data () {
     return {
-      dp: null,
-      key: 0
+      dp: null
     }
   },
   methods: {

@@ -16,6 +16,21 @@
     <q-field>
       <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
+    <div v-if="lecture.videoUrl">
+      <video-player
+        ref="player"
+        :video="video"
+
+        @canplay="videoReady"
+        >
+      </video-player>
+    </div>
+    <q-field v-if="lecture.videoUrl">
+      <q-input v-model="videoDuration" float-label="Detected Video Duration (s)" disable />
+    </q-field>
+    <q-field>
+      <q-input v-model="lecture.videoDuration" float-label="Video Duration (s)" type="number" :after="[{icon: 'autorenew', handler: updateDuration}]" />
+    </q-field>
     <q-field>
       <q-datetime v-model="lecture.releaseDate" float-label="Release Date" type="datetime" />
     </q-field>
@@ -28,12 +43,14 @@
 import { mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
 
+import VideoPlayer from '@/widgets/VideoPlayer'
 import { delayPromise } from 'src/helpers'
 import Message from '@/widgets/Message'
 
 export default {
   components: {
-    Message
+    Message,
+    VideoPlayer
   },
   data () {
     return {
@@ -43,6 +60,7 @@ export default {
         videoUrl: '',
         posterUrl: '',
         captionUrl: '',
+        videoDuration: 0,
         releaseDate: (new Date()).toISOString()
       },
       errorMsg: '',
@@ -54,13 +72,28 @@ export default {
       name: { required },
       description: { required },
       videoUrl: { required },
-      posterUrl: { required }
+      posterUrl: { required },
+      videoDuration: { required }
     }
   },
   computed: {
-    ...mapGetters(['courseId'])
+    ...mapGetters(['courseId']),
+    video () {
+      return {
+        src: this.lecture.videoUrl,
+        poster: this.lecture.posterUrl,
+        caption: this.lecture.captionUrl
+      }
+    }
   },
   methods: {
+    videoReady () {
+      this.videoDuration = this.$refs.player.duration()
+    },
+    updateDuration () {
+      this.videoReady()
+      this.lecture.videoDuration = this.videoDuration
+    },
     submit () {
       if (this.$v.$invalid) {
         this.errorMsg = 'Missing lecture attributes.'

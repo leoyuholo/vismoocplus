@@ -29,7 +29,8 @@ import Quasar, {
   QCardSeparator,
   QCardMain,
   QCardActions,
-  QDatetime
+  QDatetime,
+  QVideo
 } from 'quasar'
 
 Vue.config.productionTip = false
@@ -52,7 +53,8 @@ Vue.use(Quasar, {
     QCardSeparator,
     QCardMain,
     QCardActions,
-    QDatetime
+    QDatetime,
+    QVideo
   }
 })
 
