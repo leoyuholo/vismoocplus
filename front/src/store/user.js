@@ -64,7 +64,6 @@ export default {
       user.set('password', password)
 
       return user.signUp()
-        .then(user => commit('setUser', user))
     },
     login ({ commit, dispatch }, { email, password }) {
       return Parse.User.logIn(email, password)

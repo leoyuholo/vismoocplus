@@ -44,6 +44,22 @@ const router = new VueRouter({
       }, {
         path: 'resend',
         component: load('pages/User/Resend')
+      }, {
+        path: 'verify_email_success',
+        redirect: {
+          path: '/user/login',
+          query: {
+            success_msg: 'Email verified.'
+          }
+        }
+      }, {
+        path: 'password_reset_success',
+        redirect: {
+          path: '/user/login',
+          query: {
+            success_msg: 'Reset password success.'
+          }
+        }
       }]
     },
     {

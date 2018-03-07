@@ -19,6 +19,7 @@ const parse = new ParseServer({
   verifyUserEmails: config.get('parseServer.verifyUserEmails'),
   preventLoginWithUnverifiedEmail: config.get('parseServer.preventLoginWithUnverifiedEmail'),
   allowClientClassCreation: config.get('parseServer.allowClientClassCreation'),
+  customPages: config.get('parseServer.customPages'),
   cloud: cloudcode
 })
 

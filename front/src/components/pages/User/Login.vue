@@ -9,7 +9,7 @@
         <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" @keyup.enter="login" />
         <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
       </p>
-      <message :errorMsg="errorMsg" />
+      <message :errorMsg="errorMsg" :successMsg="successMsg" />
       <!-- <router-link class="pull-left" to="/user/resend">Verify Email</router-link> -->
       <router-link class="pull-right" to="/user/forgot">Forgot Password</router-link>
       <br/>
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { get } from 'lodash'
 import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
 import Message from '@/widgets/Message'
 
@@ -35,11 +36,14 @@ export default {
     return {
       email: '',
       password: '',
-      errorMsg: ''
+      errorMsg: '',
+      successMsg: get(this.$route, ['query', 'success_msg'], '')
     }
   },
   methods: {
     login () {
+      this.errorMsg = ''
+      this.successMsg = ''
       let email = defaultEmailDomain(this.email)
 
       if (!isValidHKUSTEmail(email)) {

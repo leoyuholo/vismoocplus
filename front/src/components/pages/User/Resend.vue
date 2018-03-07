@@ -36,6 +36,7 @@ export default {
   },
   methods: {
     resend () {
+      this.errorMsg = ''
       this.successMsg = ''
       let email = defaultEmailDomain(this.email)
 

@@ -40,6 +40,7 @@ export default {
   },
   methods: {
     signup () {
+      this.errorMsg = ''
       this.successMsg = ''
       let email = defaultEmailDomain(this.email)
 
