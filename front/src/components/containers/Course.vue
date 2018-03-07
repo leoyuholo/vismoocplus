@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import LectureList from '@/widgets/LectureList'
 import UserIcon from '@/widgets/UserIcon'
@@ -40,6 +40,10 @@ export default {
       lectureId: 'lectureId',
       allowStudio: 'user/allowStudio',
       allowAnalytics: 'user/allowAnalytics'
+    }),
+    ...mapState({
+      user: state => state.user.currentUser,
+      userSetting: state => state.user.userSetting
     }),
     lectures () {
       return this.$store.getters['lecture/list'].map(l => ({
@@ -63,7 +67,8 @@ export default {
     this.$store.dispatch('lecture/getLectures', { courseId: this.courseId })
       .then(lectures => {
         if (this.lectureId === 'index' && lectures.length > 0) {
-          this.$router.push({ path: `/course/${this.courseId}/lecture/${lectures[0].objectId}` })
+          const lectureId = (this.userSetting && this.userSetting.lastLecture) || lectures[0].objectId
+          this.$router.push({ path: `/course/${this.courseId}/lecture/${lectureId}` })
         }
       })
   }

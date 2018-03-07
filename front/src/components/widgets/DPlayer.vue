@@ -22,23 +22,29 @@ export default {
     }
   },
   methods: {
-    emit (key, type, event) {
-      if (key === this.key) {
-        this.$emit(type, event)
+    emit (type, player) {
+      if (player === this.dp) {
+        this.$emit(type, player)
       }
     },
     initDPlayer () {
-      const key = this.key = this.key + 1
-
       const player = new DPlayer({
         ...this.options,
         container: this.$el
       })
 
-      player.seek(this.settings.currentTime)
-      player.speed(this.settings.playbackRate)
-      player.volume(this.settings.volume, false, true)
-      player.video.muted = this.settings.muted
+      if (this.settings.currentTime !== undefined) {
+        player.seek(this.settings.currentTime)
+      }
+      if (this.settings.playbackRate !== undefined) {
+        player.speed(this.settings.playbackRate)
+      }
+      if (this.settings.volume !== undefined) {
+        player.volume(this.settings.volume, false, true)
+      }
+      if (this.settings.muted !== undefined) {
+        player.video.muted = this.settings.muted
+      }
 
       Object.keys(player.events).forEach(item => {
         if (item === 'events') {
@@ -46,14 +52,13 @@ export default {
         }
         else {
           player.events[item].forEach(event => {
-            player.on(event, () => this.emit(key, event, player))
+            player.on(event, () => this.emit(event, player))
           })
         }
       })
 
       this.dp = player
-
-      this.$emit('ready')
+      setImmediate(() => this.emit('ready', player))
     },
     destroyDPlayer () {
       if (!this.dp) {

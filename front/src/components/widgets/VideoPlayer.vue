@@ -95,6 +95,7 @@ export default {
       this.volume = this.settings.volume
       this.muted = this.settings.muted
       this.fullscreen = false
+      this.waitSince = undefined
     },
     heartbeat: debounce(function () {
       if (this.currentTime !== this.lastEventTime) {

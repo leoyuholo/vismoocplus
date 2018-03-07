@@ -25,11 +25,14 @@ const router = new VueRouter({
   scrollBehavior: () => ({ y: 0 }),
 
   routes: [
-    { path: '/', redirect: '/user/login' },
+    { path: '/', redirect: '/user/landing' },
     {
       path: '/user',
       component: load('containers/User'),
       children: [{
+        path: 'landing',
+        component: load('pages/User/Landing')
+      }, {
         path: 'login',
         component: load('pages/User/Login')
       }, {

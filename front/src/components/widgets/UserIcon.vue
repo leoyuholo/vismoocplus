@@ -10,6 +10,11 @@ import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'user-icon',
   props: ['permission'],
+  data () {
+    return {
+      redirectTo: null
+    }
+  },
   computed: {
     ...mapGetters({
       allowStudio: 'user/allowStudio',
@@ -21,18 +26,28 @@ export default {
   },
   methods: {
     logout () {
+      this.redirectTo = {
+        path: '/user/login'
+      }
+
       this.$store.dispatch('user/logout')
-        .then(() => this.$router.push({ path: '/' }))
+    },
+    checkPermission () {
+      if (!this.user) {
+        const redirectTo = this.redirectTo || { path: '/user/login', query: { redirect_from: this.$route.fullPath } }
+        this.$router.push(redirectTo)
+      }
+
+      if (this.permission && !this['allow' + this.permission]) {
+        this.$router.push({ path: '/404' })
+      }
     }
   },
+  watch: {
+    user () { this.checkPermission() }
+  },
   mounted () {
-    if (!this.user) {
-      this.$router.push({ path: '/', query: { redirect_from: this.$route.fullPath } })
-    }
-
-    if (this.permission && !this['allow' + this.permission]) {
-      this.$router.push({ path: '/404' })
-    }
+    this.checkPermission()
   }
 }
 </script>

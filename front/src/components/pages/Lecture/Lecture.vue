@@ -1,7 +1,7 @@
 <template>
     <div class="layout-padding lecture">
       <video-player
-        v-if="lecture"
+        v-if="lecture && userSetting"
         :video="video"
         :settings="videoPlayerSettings"
         :options="videoPlayerOptions"
