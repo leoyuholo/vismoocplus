@@ -48,14 +48,18 @@ export default {
   namespaced: true,
   state: {
     currentUser: null,
-    userSetting: null
+    userSetting: null,
+    initialized: false
   },
   actions: {
     init ({ commit, dispatch }) {
+      const chain = Promise.resolve()
+
       if (Parse.User.current()) {
-        commit('setUser', Parse.User.current())
-        dispatch('fetch')
+        chain.then(() => dispatch('fetch'))
       }
+
+      return chain.then(() => commit('initialized'))
     },
     signup ({ commit }, { email, password }) {
       const user = new Parse.User()
@@ -110,6 +114,9 @@ export default {
     }
   },
   mutations: {
+    initialized (state) {
+      state.initialized = true
+    },
     setUser (state, user) {
       if (user) {
         state.parseUser = user

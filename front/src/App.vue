@@ -1,7 +1,7 @@
 <template>
   <!-- Don't drop "q-app" class -->
   <div id="q-app">
-    <router-view />
+    <router-view v-if="initialized" />
   </div>
 </template>
 
@@ -9,7 +9,15 @@
 /*
  * Root component
  */
-export default {}
+import { mapState } from 'vuex'
+
+export default {
+  computed: {
+    ...mapState({
+      initialized: state => state.user.initialized
+    })
+  }
+}
 </script>
 
 <style lang="stylus">

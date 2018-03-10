@@ -36,6 +36,7 @@ export default {
       if (!this.user) {
         const redirectTo = this.redirectTo || { path: '/user/login', query: { redirect_from: this.$route.fullPath } }
         this.$router.push(redirectTo)
+        return
       }
 
       if (this.permission && !this['allow' + this.permission]) {
