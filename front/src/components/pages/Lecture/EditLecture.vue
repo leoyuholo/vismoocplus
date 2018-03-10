@@ -16,6 +16,9 @@
     <q-field>
       <q-input v-model="lecture.captionUrl" float-label="Subtitle URL" />
     </q-field>
+    <q-field>
+      <q-input v-model="lecture.thumbnailsUrl" float-label="Thumbnails URL" />
+    </q-field>
     <div v-if="lecture.videoUrl">
       <video-player
         ref="player"
@@ -80,7 +83,8 @@ export default {
       return {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
-        caption: this.lecture.captionUrl
+        caption: this.lecture.captionUrl,
+        thumbnails: this.lecture.thumbnailsUrl
       }
     }
   },

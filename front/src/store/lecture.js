@@ -7,7 +7,7 @@ class Lecture extends Parse.Object {
     super('Lecture')
   }
 
-  static create ({ courseId, name, description, videoUrl, posterUrl, captionUrl, videoDuration, releaseDate }) {
+  static create ({ courseId, name, description, videoUrl, posterUrl, captionUrl, thumbnailsUrl, videoDuration, releaseDate }) {
     const acl = new Parse.ACL()
     acl.setPublicReadAccess(true)
     acl.setWriteAccess(Parse.User.current().id, true)
@@ -22,6 +22,7 @@ class Lecture extends Parse.Object {
       videoUrl,
       posterUrl,
       captionUrl,
+      thumbnailsUrl,
       videoDuration,
       releaseDate
     })

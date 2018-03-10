@@ -49,6 +49,7 @@ export default {
         src: this.lecture.videoUrl,
         poster: this.lecture.posterUrl,
         caption: this.lecture.captionUrl,
+        thumbnails: this.lecture.thumbnailsUrl,
         tracking: {
           dimensions: {
             lectureId: this.lectureId,

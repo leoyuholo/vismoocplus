@@ -49,6 +49,7 @@ export default {
         src: '',
         poster: '',
         caption: '',
+        thumbnails: '',
         tracking: {}
       })
 
@@ -58,7 +59,8 @@ export default {
       return {
         video: {
           url: this.playerOptions.src,
-          pic: this.playerOptions.poster
+          pic: this.playerOptions.poster,
+          thumbnails: this.playerOptions.thumbnails
         },
         subtitle: {
           url: this.playerOptions.caption,
