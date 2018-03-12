@@ -42,7 +42,6 @@ export default {
       allowAnalytics: 'user/allowAnalytics'
     }),
     ...mapState({
-      user: state => state.user.currentUser,
       userSetting: state => state.user.userSetting
     }),
     lectures () {
