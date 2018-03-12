@@ -1,4 +1,5 @@
 import Parse from 'parse'
+import uuidv4 from 'uuid/v4'
 import { Platform } from 'quasar'
 
 class Event extends Parse.Object {
@@ -26,8 +27,12 @@ class Event extends Parse.Object {
 
 export default {
   namespaced: true,
+  state: {
+    session: uuidv4()
+  },
   actions: {
-    track ({ commit }, { eventName, dimensions, options = {} }) {
+    track ({ commit, state }, { eventName, dimensions, options = {} }) {
+      dimensions.session = state.session
       return Event.track(eventName, dimensions, options)
     }
   }

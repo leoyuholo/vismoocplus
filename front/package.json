@@ -18,6 +18,7 @@
     "parse": "^1.11.0",
     "quasar-extras": "0.x",
     "quasar-framework": "^0.14.4",
+    "uuid": "^3.2.1",
     "vue": "^2.5.0",
     "vue-analytics": "^5.8.0",
     "vue-router": "^3.0.1",
