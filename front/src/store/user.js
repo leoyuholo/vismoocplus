@@ -53,10 +53,10 @@ export default {
   },
   actions: {
     init ({ commit, dispatch }) {
-      const chain = Promise.resolve()
+      let chain = Promise.resolve()
 
       if (Parse.User.current()) {
-        chain.then(() => dispatch('fetch'))
+        chain = chain.then(() => dispatch('fetch'))
       }
 
       return chain.then(() => commit('initialized'))
