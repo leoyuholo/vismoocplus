@@ -2,3 +2,5 @@
 */dist/
 */config/development*
 */config/production*
+volumes
+video
