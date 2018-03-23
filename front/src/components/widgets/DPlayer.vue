@@ -32,16 +32,16 @@ export default {
         container: this.$el
       })
 
-      if (this.settings.currentTime !== undefined) {
+      if (this.settings.currentTime !== undefined && this.settings.currentTime !== player.video.currentTime) {
         player.seek(this.settings.currentTime)
       }
-      if (this.settings.playbackRate !== undefined) {
+      if (this.settings.playbackRate !== undefined && this.settings.playbackRate !== player.video.playbackRate) {
         player.speed(this.settings.playbackRate)
       }
-      if (this.settings.volume !== undefined) {
+      if (this.settings.volume !== undefined && this.settings.volume !== player.video.volume) {
         player.volume(this.settings.volume, false, true)
       }
-      if (this.settings.muted !== undefined) {
+      if (this.settings.muted !== undefined && this.settings.muted !== player.video.muted) {
         player.video.muted = this.settings.muted
       }
 
