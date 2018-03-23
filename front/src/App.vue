@@ -2,6 +2,9 @@
   <!-- Don't drop "q-app" class -->
   <div id="q-app">
     <router-view v-if="initialized" />
+    <p style="color:white;" v-if="!initialized" >
+      Loading...
+    </p>
   </div>
 </template>
 

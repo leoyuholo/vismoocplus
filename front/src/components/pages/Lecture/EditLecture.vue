@@ -19,7 +19,7 @@
     <q-field>
       <q-input v-model="lecture.thumbnailsUrl" float-label="Thumbnails URL" />
     </q-field>
-    <div v-if="lecture.videoUrl">
+    <div class="layout-padding lecture" v-if="lecture.videoUrl">
       <video-player
         ref="player"
         :video="video"
@@ -126,3 +126,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.lecture
+  max-width: 1280px
+</style>
