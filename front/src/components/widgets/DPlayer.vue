@@ -15,30 +15,30 @@ class HotKey {
         const event = e || window.event
         let percentage
         switch (event.keyCode) {
-        case 32:
-          event.preventDefault()
-          player.toggle()
-          break
-        case 37:
-          event.preventDefault()
-          player.seek(player.video.currentTime - 5)
-          player.controller.setAutoHide()
-          break
-        case 39:
-          event.preventDefault()
-          player.seek(player.video.currentTime + 5)
-          player.controller.setAutoHide()
-          break
-        case 38:
-          event.preventDefault()
-          percentage = player.volume() + 0.1
-          player.volume(percentage)
-          break
-        case 40:
-          event.preventDefault()
-          percentage = player.volume() - 0.1
-          player.volume(percentage)
-          break
+          case 32:
+            event.preventDefault()
+            player.toggle()
+            break
+          case 37:
+            event.preventDefault()
+            player.seek(player.video.currentTime - 5)
+            player.controller.setAutoHide()
+            break
+          case 39:
+            event.preventDefault()
+            player.seek(player.video.currentTime + 5)
+            player.controller.setAutoHide()
+            break
+          case 38:
+            event.preventDefault()
+            percentage = player.volume() + 0.1
+            player.volume(percentage)
+            break
+          case 40:
+            event.preventDefault()
+            percentage = player.volume() - 0.1
+            player.volume(percentage)
+            break
         }
       }
       switch (event.keyCode) {
