@@ -6,6 +6,57 @@
 import DPlayer from 'dplayer'
 import 'dplayer/dist/DPlayer.min.css'
 
+class HotKey {
+  constructor (player) {
+    this.eventListener = (e) => {
+      const tag = document.activeElement.tagName.toUpperCase();
+      const editable = document.activeElement.getAttribute('contenteditable');
+      if (tag !== 'INPUT' && tag !== 'TEXTAREA' && editable !== '' && editable !== 'true') {
+        const event = e || window.event;
+        let percentage;
+        switch (event.keyCode) {
+        case 32:
+          event.preventDefault();
+          player.toggle();
+          break;
+        case 37:
+          event.preventDefault();
+          player.seek(player.video.currentTime - 5);
+          player.controller.setAutoHide();
+          break;
+        case 39:
+          event.preventDefault();
+          player.seek(player.video.currentTime + 5);
+          player.controller.setAutoHide();
+          break;
+        case 38:
+          event.preventDefault();
+          percentage = player.volume() + 0.1;
+          player.volume(percentage);
+          break;
+        case 40:
+          event.preventDefault();
+          percentage = player.volume() - 0.1;
+          player.volume(percentage);
+          break;
+        }
+      }
+      switch (event.keyCode) {
+        case 27:
+          if (player.fullScreen.isFullScreen('web')) {
+            player.fullScreen.cancel('web');
+          }
+          break;
+      }
+    }
+    document.addEventListener('keydown', this.eventListener)
+  }
+
+  destroy () {
+    document.removeEventListener('keydown', this.eventListener)
+  }
+}
+
 export default {
   props: {
     options: {
@@ -29,7 +80,8 @@ export default {
     initDPlayer () {
       const player = new DPlayer({
         ...this.options,
-        container: this.$el
+        container: this.$el,
+        hotkey: false
       })
 
       if (this.settings.currentTime !== undefined && this.settings.currentTime !== player.video.currentTime) {
@@ -56,6 +108,8 @@ export default {
         }
       })
 
+      player.hotkey = new HotKey(player)
+
       this.dp = player
       setImmediate(() => this.emit('ready', player))
     },
@@ -70,6 +124,7 @@ export default {
       this.dp.video.src = ''
       this.dp.container.innerHTML = ''
       this.dp.events.trigger('destroy')
+      this.dp.hotkey.destroy()
       // DPlayer destroy does not work well since it does not remove its listeners
     }
   },
