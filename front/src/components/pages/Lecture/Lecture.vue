@@ -8,16 +8,16 @@
         @ready="trackVideoAction($event)"
         @waited="trackVideoAction($event)"
         @play="trackVideoAction($event)"
-        @pause="trackVideoAction($event)"
+        @pause="trackAndSave($event)"
         @end="trackAndSave($event)"
-        @seek="trackAndSave($event)"
+        @seek="trackVideoAction($event)"
         @enterfullscreen="trackVideoAction($event)"
         @exitfullscreen="trackVideoAction($event)"
         @volumechange="trackAndSave($event)"
         @ratechange="trackAndSave($event)"
         @switch="trackAndSave($event)"
         @close="trackAndSave($event)"
-        @heartbeat="trackVideoAction($event)"
+        @heartbeat="trackAndSave($event)"
       />
     </div>
 </template>
