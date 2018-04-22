@@ -62,7 +62,7 @@ export default {
 
       return chain
         .then(() => commit('initialized'))
-        .catch(err => commit('initError', err))
+        .catch(error => commit('initError', error))
     },
     signup ({ commit }, { email, password }) {
       const user = new Parse.User()
@@ -98,7 +98,7 @@ export default {
         return Promise.reject(new Error("User hasn't logged in."))
       }
 
-      if (process.env.verifyUserEmails && !Parse.User.current().emailVerified) {
+      if (process.env.verifyUserEmails && !Parse.User.current().get('emailVerified')) {
         return Promise.reject(new Error('User email is not verified.'))
       }
 
@@ -124,9 +124,9 @@ export default {
     initialized (state) {
       state.initialized = true
     },
-    initError (state, err) {
+    initError (state, error) {
       state.initialized = true
-      state.initError = err
+      state.initError = error
     },
     setUser (state, user) {
       if (user) {

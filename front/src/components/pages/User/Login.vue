@@ -56,7 +56,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('user/login', { email, password: this.password })
+      return this.$store.dispatch('user/login', { email, password: this.password })
         .then(() => this.$router.push({ path: this.$route.query.redirect_from || '/course/COMP4901F/lecture/index' }))
         .catch(error => { this.errorMsg = error.message })
     }
