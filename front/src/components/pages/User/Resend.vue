@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import get from 'lodash/get'
 import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
 import Message from '@/widgets/Message'
 
@@ -29,7 +30,7 @@ export default {
   },
   data () {
     return {
-      email: '',
+      email: get(this.$route, ['query', 'email'], ''),
       errorMsg: '',
       successMsg: ''
     }

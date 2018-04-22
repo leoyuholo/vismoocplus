@@ -10,7 +10,7 @@
         <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
       </p>
       <message :errorMsg="errorMsg" :successMsg="successMsg" />
-      <!-- <router-link class="pull-left" to="/user/resend">Verify Email</router-link> -->
+      <router-link v-if="errorMsg === 'User email is not verified.'" class="pull-left" :to="`/user/resend?email=${email}`">Verify Email</router-link>
       <router-link class="pull-right" to="/user/forgot">Forgot Password</router-link>
       <br/>
     </q-card-main>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { get } from 'lodash'
+import get from 'lodash/get'
 import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
 import Message from '@/widgets/Message'
 

@@ -25,7 +25,9 @@
 </template>
 
 <script>
-import { debounce, capitalize, defaults } from 'lodash'
+import debounce from 'lodash/debounce'
+import capitalize from 'lodash/capitalize'
+import defaults from 'lodash/defaults'
 import VueDPlayer from '@/widgets/DPlayer'
 
 export default {
