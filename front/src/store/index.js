@@ -21,7 +21,7 @@ const store = new Vuex.Store({
   },
   actions: {
     init ({ dispatch }) {
-      dispatch('user/init')
+      return dispatch('user/init')
     }
   },
   getters: {

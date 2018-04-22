@@ -17,8 +17,16 @@ import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState({
-      initialized: state => state.user.initialized
+      initialized: state => state.user.initialized,
+      initError: state => state.user.initError
     })
+  },
+  watch: {
+    initError (newVal, oldVal) {
+      if (newVal) {
+        return this.$router.push({ path: '/user/login', query: { error_msg: newVal.message } })
+      }
+    }
   }
 }
 </script>

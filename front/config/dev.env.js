@@ -3,6 +3,7 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
+  verifyUserEmails: true,
   parseConfig: {
     appId: '"vismoocplus"',
     serverURL: '"http://localhost:1337/api"'

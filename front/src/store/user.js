@@ -49,7 +49,8 @@ export default {
   state: {
     currentUser: null,
     userSetting: null,
-    initialized: false
+    initialized: false,
+    initError: null
   },
   actions: {
     init ({ commit, dispatch }) {
@@ -59,7 +60,9 @@ export default {
         chain = chain.then(() => dispatch('fetch'))
       }
 
-      return chain.then(() => commit('initialized'))
+      return chain
+        .then(() => commit('initialized'))
+        .catch(err => commit('initError', err))
     },
     signup ({ commit }, { email, password }) {
       const user = new Parse.User()
@@ -95,6 +98,10 @@ export default {
         return Promise.reject(new Error("User hasn't logged in."))
       }
 
+      if (process.env.verifyUserEmails && !Parse.User.current().emailVerified) {
+        return Promise.reject(new Error('User email is not verified.'))
+      }
+
       return UserSetting.get()
         .then(userSetting => commit('setUserSetting', userSetting))
     },
@@ -116,6 +123,10 @@ export default {
   mutations: {
     initialized (state) {
       state.initialized = true
+    },
+    initError (state, err) {
+      state.initialized = true
+      state.initError = err
     },
     setUser (state, user) {
       if (user) {

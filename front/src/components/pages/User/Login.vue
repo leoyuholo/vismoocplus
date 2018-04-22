@@ -15,7 +15,7 @@
       <br/>
     </q-card-main>
     <q-card-actions>
-      <q-btn color="primary" class="full-width" @click="login">Login</q-btn>
+      <q-btn color="primary" class="full-width" @click="login">Log In</q-btn>
     </q-card-actions>
     <q-card-actions>
       <q-btn flat class="full-width" @click="$router.push({ path: '/user/signup' })">Sign Up</q-btn>
@@ -36,7 +36,7 @@ export default {
     return {
       email: '',
       password: '',
-      errorMsg: '',
+      errorMsg: get(this.$route, ['query', 'error_msg'], ''),
       successMsg: get(this.$route, ['query', 'success_msg'], '')
     }
   },
