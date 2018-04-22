@@ -14,13 +14,13 @@ export default {
   },
   methods: {
     redirect () {
-      if (!this.user) {
-        this.$router.push({ path: '/user/login' })
-      }
-      else if (this.user && this.userSetting) {
+      if (this.user && this.userSetting) {
         const course = this.userSetting.lastCourse || 'COMP4901F'
         const lecture = this.userSetting.lastLecture || 'index'
         this.$router.push({ path: `/course/${course}/lecture/${lecture}` })
+      }
+      else {
+        this.$router.push({ path: '/user/login' })
       }
     }
   },
