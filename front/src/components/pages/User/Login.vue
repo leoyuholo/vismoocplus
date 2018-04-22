@@ -18,7 +18,7 @@
       <q-btn color="primary" class="full-width" @click="login">Log In</q-btn>
     </q-card-actions>
     <q-card-actions>
-      <q-btn flat class="full-width" @click="$router.push({ path: '/user/signup' })">Sign Up VisMOOC+</q-btn>
+      <q-btn flat class="full-width" @click="$router.push({ path: '/user/signup' })">Sign Up</q-btn>
     </q-card-actions>
   </q-card>
 </template>
