@@ -25,6 +25,8 @@
 import { isValidHKUSTEmail, defaultEmailDomain } from 'src/helpers'
 import Message from '@/widgets/Message'
 
+const validatorPattern = /^(?=.{8,})/
+
 export default {
   components: {
     Message
@@ -56,6 +58,11 @@ export default {
 
       if (this.password !== this.confirmPassword) {
         this.errorMsg = 'Password mismatch.'
+        return
+      }
+
+      if (!validatorPattern.test(this.password)) {
+        this.errorMsg = 'Password too weak.'
         return
       }
 
