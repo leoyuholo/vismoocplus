@@ -7,7 +7,9 @@
     <q-card-main>
       <p>
         <q-input v-model="email" align="left" type="email" stack-label="Email" suffix="@connect.ust.hk" @keyup.enter="login" />
-        <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
+        <q-field helper="*Not your ITSC password">
+          <q-input v-model="password" type="password" stack-label="Password" @keyup.enter="login" />
+        </q-field>
       </p>
       <message :errorMsg="errorMsg" :successMsg="successMsg" />
       <router-link v-if="errorMsg === 'User email is not verified.'" class="pull-left" :to="`/user/resend?email=${email}`">Verify Email</router-link>
