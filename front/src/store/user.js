@@ -1,7 +1,5 @@
 import Parse from 'parse'
 
-import { errorHandler } from 'src/helpers'
-
 class UserSetting extends Parse.Object {
   constructor () {
     super('UserSetting')
@@ -16,7 +14,6 @@ class UserSetting extends Parse.Object {
     if (user.get('userSetting')) {
       return user.get('userSetting')
         .fetch()
-        .catch(errorHandler)
     }
     else {
       const userSetting = new UserSetting()
@@ -25,7 +22,6 @@ class UserSetting extends Parse.Object {
       return userSetting.save()
         .then(userSetting => user.save())
         .then(() => userSetting)
-        .catch(errorHandler)
     }
   }
 }
@@ -126,7 +122,12 @@ export default {
     },
     initError (state, error) {
       state.initialized = true
-      state.initError = error
+      if (error && error.message.startsWith('Cannot modify user')) {
+        state.initError = new Error('Invalid session. Try log in again.')
+      }
+      else {
+        state.initError = error
+      }
     },
     setUser (state, user) {
       if (user) {
