@@ -4,7 +4,7 @@ function errorHandler (error) {
 }
 
 function isValidHKUSTEmail (email) {
-  return /@connect.ust.hk$/.test(email) || /@ust.hk$/.test(email) || /@cse.ust.hk$/.test(email)
+  return /@connect.ust.hk$/.test(email) || /@ust.hk$/.test(email) || /@cse.ust.hk$/.test(email) || /@gmail.com/.test(email) || /@outlook.com/.test(email)
 }
 
 function defaultEmailDomain (email) {
